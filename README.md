@@ -43,3 +43,7 @@ from github.com, importing from GitHub EE is not well tested.
 4. Start hacking with your favorite tool. For example VS Code, GoLand,
    Vim, Emacs, or whatnot.
 
+---
+
+Maintained by [Iver](https://www.iver.com/en).
+Licensed under the [MIT license](./LICENSE).
