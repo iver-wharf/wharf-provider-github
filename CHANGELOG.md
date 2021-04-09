@@ -1,0 +1,58 @@
+# Wharf GitHub plugin changelog
+
+This project tries to follow [SemVer 2.0.0](https://semver.org/).
+
+<!--
+	When composing new changes to this list, try to follow convention.
+
+	The WIP release shall be updated just before adding the Git tag.
+	From (WIP) to (YYYY-MM-DD), ex: (2021-02-09) for 9th of Febuary, 2021
+
+	A good source on conventions can be found here:
+	https://changelog.md/
+-->
+
+## v1.1.1 (WIP)
+
+- Added CHANGELOG.md to repository. (!6)
+
+- Changed to use new open sourced Wharf API client
+  [github.com/iver-wharf/wharf-api-client-go](https://github.com/iver-wharf/wharf-api-client-go)
+  and bumped said package version from v1.1.0 to v1.2.0. (!7)
+
+- Added `.dockerignore` to make Docker builds agnostic to wether you've ran
+  `swag init` locally. (!8)
+
+## v1.1.0 (2021-01-07)
+
+- Changed version of Wharf API Go client, from v0.1.5 to v1.1.0, that contained
+  a lot of refactors in type and package name changes. (!4, !5)
+
+## v1.0.0 (2020-11-27)
+
+- Removed groups table, a reflection of the changes from the API v1.0.0. (!3)
+
+## v0.8.0 (2020-11-03)
+
+- Added missing `go.sum` file. (!1)
+
+## v0.7.1 (2020-01-22)
+
+- *Version bump.*
+
+## v0.7.0 (2020-01-22)
+
+- *Version bump.*
+
+## v0.6.0 (2020-01-22)
+
+- Added repo, split from mono-repo. (baad06dc)
+
+- Added `.wharf-ci.yml` to build Docker images. (36e299cb)
+
+- Changed Docker build to use Go modules via `GO111MODULE=on` environment
+  variable. (34768c1e)
+
+- Fixed reference Go modules in `go.mod`. (daa930a8)
+
+- Fixed Docker build to use `go.mod` instead of explicit references. (97d15055)

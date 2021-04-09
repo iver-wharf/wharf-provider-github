@@ -1,0 +1,5 @@
+build:
+  github:
+    docker:
+      file: Dockerfile
+      tag: ${GIT_COMMIT},${GIT_TAG},latest
