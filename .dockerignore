@@ -1,0 +1,5 @@
+.git
+.dockerignore
+Dockerfile
+.wharf-ci.yml
+docs
