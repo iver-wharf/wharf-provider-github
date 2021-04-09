@@ -16,12 +16,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added CHANGELOG.md to repository. (!6)
 
+- Added `.dockerignore` to make Docker builds agnostic to wether you've ran
+  `swag init` locally. (!8)
+
 - Changed to use new open sourced Wharf API client
   [github.com/iver-wharf/wharf-api-client-go](https://github.com/iver-wharf/wharf-api-client-go)
   and bumped said package version from v1.1.0 to v1.2.0. (!7)
 
-- Added `.dockerignore` to make Docker builds agnostic to wether you've ran
-  `swag init` locally. (!8)
+- Changed base Docker image to be `alpine:3.13.4` instead of `scratch` to get
+  certificates from the Alpine package manager, APK, instead of embedding a
+  list of certificates inside the repository. (#1)
 
 ## v1.1.0 (2021-01-07)
 
