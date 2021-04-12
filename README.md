@@ -13,7 +13,7 @@ from github.com, importing from GitHub EE is not well tested.
   [swaggo/gin-swagger](https://github.com/swaggo/gin-swagger)
 
 - GitHub API client using
-  [google/go-github](https://github.com/google/go-github/github)
+  [google/go-github](https://github.com/google/go-github)
 
 ## Development
 
