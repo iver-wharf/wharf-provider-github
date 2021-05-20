@@ -92,7 +92,7 @@ func runGitHubHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (base GithubImporter) GetToken(i Import) (wharfapi.Token, error) {
+func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	var token wharfapi.Token
 	var err error
 
