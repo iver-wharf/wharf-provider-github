@@ -22,11 +22,11 @@ type importBody struct {
 	// used in refresh only
 	ProviderID uint `json:"providerId" example:"0"`
 	// azuredevops, gitlab or github
-	Provider string `json:"provider" example:"gitlab"`
+	Provider string `json:"provider" example:"github"`
 	// used in refresh only
 	ProjectID uint   `json:"projectId" example:"0"`
-	Project   string `json:"project" example:"sample project name"`
-	Group     string `json:"group" example:"default"`
+	Project   string `json:"project" example:"sample project name (wharf-api)"`
+	Group     string `json:"group" example:"default (iver-wharf)"`
 }
 
 const buildDefinitionFileName = ".wharf-ci.yml"
