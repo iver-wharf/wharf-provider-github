@@ -52,17 +52,17 @@ func runGitHubHandler(c *gin.Context) {
 		},
 	}
 
-	importer.Provider, err = importer.getProvider(i)
-	if err != nil {
-		c.Error(err)
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get provider. %+v", err))
-		return
-	}
-
 	importer.Token, err = importer.getToken(i)
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get token. %+v", err))
+		return
+	}
+
+	importer.Provider, err = importer.getProvider(i)
+	if err != nil {
+		c.Error(err)
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get provider. %+v", err))
 		return
 	}
 
@@ -92,37 +92,9 @@ func runGitHubHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
-	var provider wharfapi.Provider
-	var err error
-	if i.ProviderID != 0 {
-		provider, err = importer.WharfClient.GetProviderById(i.ProviderID)
-		if err != nil {
-			return provider, err
-		} else if provider.ProviderID == 0 {
-			err = fmt.Errorf("provider with id %v not found", i.ProviderID)
-		} else if provider.URL != i.URL {
-			err = fmt.Errorf("invalid url in provider %v", provider.URL)
-		} else if provider.UploadURL != i.UploadURL {
-			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
-		}
-	} else {
-		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, importer.Token.TokenID)
-		if err != nil || provider.ProviderID == 0 {
-			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL})
-		}
-	}
-	fmt.Println("Provider from db: ", provider)
-	return provider, nil
-}
-
-func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
+func (base GithubImporter) GetToken(i Import) (wharfapi.Token, error) {
 	var token wharfapi.Token
 	var err error
-
-	if importer.Provider.ProviderID == 0 {
-		return token, fmt.Errorf("provider not found")
-	}
 
 	if i.TokenID != 0 {
 		token, err = importer.WharfClient.GetTokenById(i.TokenID)
@@ -143,6 +115,32 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	fmt.Println("Token from db: ", token)
 	return token, err
 }
+
+func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
+	var provider wharfapi.Provider
+	var err error
+
+	if i.ProviderID != 0 {
+		provider, err = importer.WharfClient.GetProviderById(i.ProviderID)
+		if err != nil {
+			return provider, err
+		} else if provider.ProviderID == 0 {
+			err = fmt.Errorf("provider with id %v not found", i.ProviderID)
+		} else if provider.URL != i.URL {
+			err = fmt.Errorf("invalid url in provider %v", provider.URL)
+		} else if provider.UploadURL != i.UploadURL {
+			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
+		}
+	} else {
+		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, importer.Token.TokenID)
+		if err != nil || provider.ProviderID == 0 {
+			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: importer.Token.TokenID})
+		}
+	}
+	fmt.Println("Provider from db: ", provider)
+	return provider, nil
+}
+
 
 func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: importer.Token.Token})
@@ -206,7 +204,6 @@ func (importer githubImporter) importProject(i importBody) error {
 
 func (importer githubImporter) putProject(repo *github.Repository) error {
 	buildDefinitionStr := importer.getBuildDefiniton(repo.GetOwner().GetLogin(), repo.GetName())
-
 	project, err := importer.WharfClient.PutProject(
 		wharfapi.Project{
 			Name:            repo.GetName(),
@@ -214,7 +211,9 @@ func (importer githubImporter) putProject(repo *github.Repository) error {
 			GroupName:       repo.GetOwner().GetLogin(),
 			BuildDefinition: buildDefinitionStr,
 			Description:     repo.GetDescription(),
-			ProviderID:      importer.Provider.ProviderID})
+			AvatarUrl:       *repo.GetOwner().AvatarURL,
+			ProviderID:      importer.Provider.ProviderID,
+			GitURL:          *repo.GitURL})
 	if err != nil {
 		return err
 	} else if project.ProjectID == 0 {
