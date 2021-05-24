@@ -15,7 +15,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type GithubImporter struct {
+type githubImporter struct {
 	GithubClient *github.Client
 	WharfClient  wharfapi.Client
 	Context      context.Context
@@ -23,17 +23,17 @@ type GithubImporter struct {
 	Token        wharfapi.Token
 }
 
-// RunGithubHandler godoc
-// @Summary Import projects from github or refresh existing one
-// @Accept  json
-// @Produce  json
-// @Param import body main.Import _ "import object"
+// runGitHubHandler godoc
+// @Summary Import projects from GitHub or refresh existing one
+// @Accept json
+// @Produce json
+// @Param import body importBody _ "import object"
 // @Success 200 "OK"
 // @Failure 400 "Bad request"
 // @Failure 401 "Unauthorized or missing jwt token"
 // @Router /github [post]
-func RunGithubHandler(c *gin.Context) {
-	i := Import{}
+func runGitHubHandler(c *gin.Context) {
+	i := importBody{}
 	err := c.BindJSON(&i)
 	if err != nil {
 		c.Error(err)
@@ -44,7 +44,7 @@ func RunGithubHandler(c *gin.Context) {
 	fmt.Println("from json: ", i)
 
 	ctx := context.Background()
-	importer := GithubImporter{
+	importer := githubImporter{
 		Context: ctx,
 		WharfClient: wharfapi.Client{
 			ApiUrl:     os.Getenv("WHARF_API_URL"),
@@ -52,36 +52,36 @@ func RunGithubHandler(c *gin.Context) {
 		},
 	}
 
-	importer.Provider, err = importer.GetProvider(i)
+	importer.Provider, err = importer.getProvider(i)
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get provider. %+v", err))
 		return
 	}
 
-	importer.Token, err = importer.GetToken(i)
+	importer.Token, err = importer.getToken(i)
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get token. %+v", err))
 		return
 	}
 
-	importer.GithubClient, err = importer.InitGithubConnection()
+	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to init github connection. %+v", err))
 		return
 	}
 
-	if i.ProjectId != 0 || i.Project != "" {
-		err = importer.ImportProject(i)
+	if i.ProjectID != 0 || i.Project != "" {
+		err = importer.importProject(i)
 		if err != nil {
 			c.Error(err)
 			c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to import project. %+v", err))
 			return
 		}
 	} else {
-		err = importer.Import(i.Group)
+		err = importer.importGroup(i.Group)
 		if err != nil {
 			c.Error(err)
 			c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to import organization or group. %+v", err))
@@ -92,51 +92,51 @@ func RunGithubHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, "OK")
 }
 
-func (base GithubImporter) GetProvider(i Import) (wharfapi.Provider, error) {
+func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
 	var provider wharfapi.Provider
 	var err error
-	if i.ProviderId != 0 {
-		provider, err = base.WharfClient.GetProviderById(i.ProviderId)
+	if i.ProviderID != 0 {
+		provider, err = importer.WharfClient.GetProviderById(i.ProviderID)
 		if err != nil {
 			return provider, err
 		} else if provider.ProviderID == 0 {
-			err = fmt.Errorf("provider with id %v not found", i.ProviderId)
-		} else if provider.URL != i.Url {
+			err = fmt.Errorf("provider with id %v not found", i.ProviderID)
+		} else if provider.URL != i.URL {
 			err = fmt.Errorf("invalid url in provider %v", provider.URL)
-		} else if provider.UploadURL != i.UploadUrl {
+		} else if provider.UploadURL != i.UploadURL {
 			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
 		}
 	} else {
-		provider, err = base.WharfClient.GetProvider("github", i.Url, i.UploadUrl, base.Token.TokenID)
+		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, importer.Token.TokenID)
 		if err != nil || provider.ProviderID == 0 {
-			provider, err = base.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.Url, UploadURL: i.UploadUrl})
+			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL})
 		}
 	}
 	fmt.Println("Provider from db: ", provider)
 	return provider, nil
 }
 
-func (base GithubImporter) GetToken(i Import) (wharfapi.Token, error) {
+func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	var token wharfapi.Token
 	var err error
 
-	if base.Provider.ProviderID == 0 {
+	if importer.Provider.ProviderID == 0 {
 		return token, fmt.Errorf("provider not found")
 	}
 
-	if i.TokenId != 0 {
-		token, err = base.WharfClient.GetTokenById(i.TokenId)
+	if i.TokenID != 0 {
+		token, err = importer.WharfClient.GetTokenById(i.TokenID)
 		if err != nil {
 			return token, err
 		} else if token.TokenID == 0 {
-			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenId))
-		} else if token.ProviderID != base.Provider.ProviderID {
-			err = fmt.Errorf(fmt.Sprintf("Token with invalid provider id %v.", i.ProviderId))
+			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
+		} else if token.ProviderID != importer.Provider.ProviderID {
+			err = fmt.Errorf(fmt.Sprintf("Token with invalid provider id %v.", i.ProviderID))
 		}
 	} else {
-		token, err = base.WharfClient.GetToken(i.Token, i.User)
+		token, err = importer.WharfClient.GetToken(i.Token, i.User)
 		if err != nil || token.TokenID == 0 {
-			token, err = base.WharfClient.PostToken(wharfapi.Token{Token: i.Token, UserName: i.User, ProviderID: base.Provider.ProviderID})
+			token, err = importer.WharfClient.PostToken(wharfapi.Token{Token: i.Token, UserName: i.User, ProviderID: importer.Provider.ProviderID})
 		}
 	}
 
@@ -144,15 +144,15 @@ func (base GithubImporter) GetToken(i Import) (wharfapi.Token, error) {
 	return token, err
 }
 
-func (base GithubImporter) InitGithubConnection() (*github.Client, error) {
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: base.Token.Token})
-	tc := oauth2.NewClient(base.Context, ts)
-	client, err := github.NewEnterpriseClient(base.Provider.URL, base.Provider.UploadURL, tc)
+func (importer githubImporter) initGithubConnection() (*github.Client, error) {
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: importer.Token.Token})
+	tc := oauth2.NewClient(importer.Context, ts)
+	client, err := github.NewEnterpriseClient(importer.Provider.URL, importer.Provider.UploadURL, tc)
 	return client, err
 }
 
-func (base GithubImporter) GetBuildDefiniton(owner string, projectName string) string {
-	fileContent, _, _, err := base.GithubClient.Repositories.GetContents(base.Context, owner, projectName, buildDefinitionFileName, nil)
+func (importer githubImporter) getBuildDefiniton(owner string, projectName string) string {
+	fileContent, _, _, err := importer.GithubClient.Repositories.GetContents(importer.Context, owner, projectName, buildDefinitionFileName, nil)
 	if err != nil {
 		return ""
 	}
@@ -165,13 +165,13 @@ func (base GithubImporter) GetBuildDefiniton(owner string, projectName string) s
 	return string(bodyString)
 }
 
-func (base GithubImporter) ImportProject(i Import) error {
-	if i.ProjectId != 0 {
-		project, err := base.WharfClient.GetProjectById(i.ProjectId)
+func (importer githubImporter) importProject(i importBody) error {
+	if i.ProjectID != 0 {
+		project, err := importer.WharfClient.GetProjectById(i.ProjectID)
 		if err != nil {
 			return err
 		} else if project.ProjectID == 0 {
-			return fmt.Errorf(fmt.Sprintf("Project with id %v not found.", i.ProjectId))
+			return fmt.Errorf(fmt.Sprintf("Project with id %v not found.", i.ProjectID))
 		}
 		i.Project = project.Name
 	}
@@ -179,7 +179,7 @@ func (base GithubImporter) ImportProject(i Import) error {
 	var repo *github.Repository
 	var err error
 	if i.Group != "" {
-		repo, _, err = base.GithubClient.Repositories.Get(base.Context, i.Group, i.Project)
+		repo, _, err = importer.GithubClient.Repositories.Get(importer.Context, i.Group, i.Project)
 		if err != nil {
 			return err
 		} else if repo.GetName() != i.Project {
@@ -189,7 +189,7 @@ func (base GithubImporter) ImportProject(i Import) error {
 				i.Project, repo.GetOwner().GetLogin()))
 		}
 	} else {
-		repos, _, err := base.GithubClient.Repositories.List(base.Context, "", nil)
+		repos, _, err := importer.GithubClient.Repositories.List(importer.Context, "", nil)
 		if err != nil {
 			return err
 		}
@@ -201,37 +201,37 @@ func (base GithubImporter) ImportProject(i Import) error {
 		}
 	}
 
-	return base.PutProject(repo)
+	return importer.putProject(repo)
 }
 
-func (base GithubImporter) PutProject(repo *github.Repository) error {
-	buildDefinitionStr := base.GetBuildDefiniton(repo.GetOwner().GetLogin(), repo.GetName())
+func (importer githubImporter) putProject(repo *github.Repository) error {
+	buildDefinitionStr := importer.getBuildDefiniton(repo.GetOwner().GetLogin(), repo.GetName())
 
-	project, err := base.WharfClient.PutProject(
+	project, err := importer.WharfClient.PutProject(
 		wharfapi.Project{
 			Name:            repo.GetName(),
-			TokenID:         base.Token.TokenID,
+			TokenID:         importer.Token.TokenID,
 			GroupName:       repo.GetOwner().GetLogin(),
 			BuildDefinition: buildDefinitionStr,
 			Description:     repo.GetDescription(),
-			ProviderID:      base.Provider.ProviderID})
+			ProviderID:      importer.Provider.ProviderID})
 	if err != nil {
 		return err
 	} else if project.ProjectID == 0 {
 		return fmt.Errorf("unable to put project")
 	}
 
-	branches, _, err := base.GithubClient.Repositories.ListBranches(base.Context, project.GroupName, project.Name, nil)
+	branches, _, err := importer.GithubClient.Repositories.ListBranches(importer.Context, project.GroupName, project.Name, nil)
 	if err != nil {
 		return err
 	}
 	for _, branch := range branches {
-		_, err := base.WharfClient.PutBranch(
+		_, err := importer.WharfClient.PutBranch(
 			wharfapi.Branch{
 				Name:      branch.GetName(),
 				ProjectID: project.ProjectID,
 				Default:   branch.GetName() == repo.GetDefaultBranch(),
-				TokenID:   base.Token.TokenID})
+				TokenID:   importer.Token.TokenID})
 		if err != nil {
 			break
 		}
@@ -240,15 +240,15 @@ func (base GithubImporter) PutProject(repo *github.Repository) error {
 	return err
 }
 
-func (base GithubImporter) Import(groupName string) error {
-	repos, _, err := base.GithubClient.Repositories.List(base.Context, "", nil)
+func (importer githubImporter) importGroup(groupName string) error {
+	repos, _, err := importer.GithubClient.Repositories.List(importer.Context, "", nil)
 	if err != nil {
 		return err
 	}
 
 	for _, repo := range repos {
 		if groupName == "" || repo.GetOwner().GetLogin() == groupName {
-			err = base.PutProject(repo)
+			err = importer.putProject(repo)
 			if err != nil {
 				return err
 			}
