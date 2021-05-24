@@ -1,6 +1,6 @@
 # GitHub provider for Wharf
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d2d48df2187247048cdf992e9a5f576d)](https://www.codacy.com/gh/iver-wharf/wharf-provider-github/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iver-wharf/wharf-provider-github&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d2d48df2187247048cdf992e9a5f576d)](https://www.codacy.com/gh/iver-wharf/wharf-provider-github/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=iver-wharf/wharf-provider-github\&utm_campaign=Badge_Grade)
 
 Import Wharf projects from GitHub repositories. Mainly focused on importing
 from github.com, importing from GitHub EE is not well tested.
