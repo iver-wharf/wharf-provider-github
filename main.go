@@ -17,7 +17,7 @@ type importBody struct {
 	TokenID   uint   `json:"tokenId" example:"0"`
 	Token     string `json:"token" example:"sample token"`
 	User      string `json:"user" example:"sample user name"`
-	URL       string `json:"url" example:"https://gitlab.local"`
+	URL       string `json:"url" example:"https://api.github.com/"`
 	UploadURL string `json:"uploadUrl" example:""`
 	// used in refresh only
 	ProviderID uint `json:"providerId" example:"0"`
@@ -25,8 +25,8 @@ type importBody struct {
 	Provider string `json:"provider" example:"github"`
 	// used in refresh only
 	ProjectID uint   `json:"projectId" example:"0"`
-	Project   string `json:"project" example:"sample project name (wharf-api)"`
-	Group     string `json:"group" example:"default (iver-wharf)"`
+	Project   string `json:"project" example:"wharf-provider-github"`
+	Group     string `json:"group" example:"iver-wharf"`
 }
 
 const buildDefinitionFileName = ".wharf-ci.yml"
