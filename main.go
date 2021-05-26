@@ -11,19 +11,19 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-type Import struct {
+type importBody struct {
 	// used in refresh only
-	TokenId   uint   `json:"tokenId" example:"0"`
+	TokenID   uint   `json:"tokenId" example:"0"`
 	Token     string `json:"token" example:"sample token"`
 	User      string `json:"user" example:"sample user name"`
-	Url       string `json:"url" example:"https://gitlab.local"`
-	UploadUrl string `json:"uploadUrl" example:""`
+	URL       string `json:"url" example:"https://gitlab.local"`
+	UploadURL string `json:"uploadUrl" example:""`
 	// used in refresh only
-	ProviderId uint `json:"providerId" example:"0"`
+	ProviderID uint `json:"providerId" example:"0"`
 	// azuredevops, gitlab or github
 	Provider string `json:"provider" example:"gitlab"`
 	// used in refresh only
-	ProjectId uint   `json:"projectId" example:"0"`
+	ProjectID uint   `json:"projectId" example:"0"`
 	Project   string `json:"project" example:"sample project name"`
 	Group     string `json:"group" example:"default"`
 }
@@ -39,19 +39,19 @@ const buildDefinitionFileName = ".wharf-ci.yml"
 func main() {
 	r := gin.Default()
 
-	allow_cors, ok := os.LookupEnv("ALLOW_CORS")
-	if ok && allow_cors == "YES" {
+	allowCors, ok := os.LookupEnv("ALLOW_CORS")
+	if ok && allowCors == "YES" {
 		fmt.Printf("Allowing CORS\n")
 		r.Use(cors.Default())
 	}
 
-	r.GET("/", ping)
-	r.POST("/import/github", RunGithubHandler)
+	r.GET("/", runPingHandler)
+	r.POST("/import/github", runGitHubHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run()
 }
 
-func ping(c *gin.Context) {
+func runPingHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "pong"})
 }

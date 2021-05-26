@@ -1,5 +1,7 @@
 # GitHub provider for Wharf
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d2d48df2187247048cdf992e9a5f576d)](https://www.codacy.com/gh/iver-wharf/wharf-provider-github/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=iver-wharf/wharf-provider-github\&utm_campaign=Badge_Grade)
+
 Import Wharf projects from GitHub repositories. Mainly focused on importing
 from github.com, importing from GitHub EE is not well tested.
 
@@ -43,13 +45,38 @@ from github.com, importing from GitHub EE is not well tested.
 4. Start hacking with your favorite tool. For example VS Code, GoLand,
    Vim, Emacs, or whatnot.
 
+## Linting Golang
+
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Revive to be installed: <https://revive.run/>
+
+```sh
+go get -u github.com/mgechev/revive
+```
+
+```sh
+npm run lint-go
+```
+
 ## Linting markdown
 
-Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
 
 ```sh
 npm install
 
+npm run lint-md
+
+# Some errors can be fixed automatically. Keep in mind that this updates the
+# files in place.
+npm run lint-md-fix
+```
+
+## Linting
+
+You can lint all of the above at the same time by running:
+
+```sh
 npm run lint
 
 # Some errors can be fixed automatically. Keep in mind that this updates the
