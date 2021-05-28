@@ -12,6 +12,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.1.2 (WIP)
+
+- Fixed importing from a group different than the authenticated user. (#13)
+
 ## v1.1.1 (2021-04-09)
 
 - Added CHANGELOG.md to repository. (!6)
