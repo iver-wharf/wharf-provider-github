@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iver-wharf/wharf-provider-github/docs"
 
 	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
@@ -30,13 +31,23 @@ type importBody struct {
 
 const buildDefinitionFileName = ".wharf-ci.yml"
 
-// @title Swagger import API
-// @version 1.0
-// @description Wharf import server.
-
-// @Host
-// @BasePath /import
+// @title Wharf provider API for GitHub
+// @description Wharf backend API for integrating GitHub repositories with
+// @description the Wharf main API.
+// @license.name MIT
+// @license.url https://github.com/iver-wharf/wharf-provider-github/blob/master/LICENSE
+// @contact.name Iver Wharf GitHub provider API support
+// @contact.url https://github.com/iver-wharf/wharf-provider-github/issues
+// @contact.email wharf@iver.se
+// @basePath /import
 func main() {
+	if err := loadEmbeddedVersionFile(); err != nil {
+		fmt.Println("Failed to read embedded version.yaml file:", err)
+		os.Exit(1)
+	}
+
+	docs.SwaggerInfo.Version = AppVersion.Version
+
 	r := gin.Default()
 
 	allowCors, ok := os.LookupEnv("ALLOW_CORS")
@@ -47,6 +58,7 @@ func main() {
 
 	r.GET("/", runPingHandler)
 	r.POST("/import/github", runGitHubHandler)
+	r.GET("/import/github/version", getVersionHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run()

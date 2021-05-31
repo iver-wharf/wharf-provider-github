@@ -39,7 +39,7 @@ from github.com, importing from GitHub EE is not well tested.
    $ cd wharf-provider-github
 
    # Generate the files into docs/
-   $ swag
+   $ swag init --parseDependency --parseDepth 1
    ```
 
 4. Start hacking with your favorite tool. For example VS Code, GoLand,

@@ -28,16 +28,16 @@ type githubImporter struct {
 // @Accept json
 // @Produce json
 // @Param import body importBody _ "import object"
-// @Success 200 "OK"
-// @Failure 400 "Bad request"
-// @Failure 401 "Unauthorized or missing jwt token"
+// @Success 201 "Successfully imported"
+// @Failure 400 {object} string "Bad request"
+// @Failure 401 {object} string "Unauthorized or missing jwt token"
 // @Router /github [post]
 func runGitHubHandler(c *gin.Context) {
 	i := importBody{}
 	err := c.BindJSON(&i)
 	if err != nil {
 		c.Error(err)
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -89,7 +89,7 @@ func runGitHubHandler(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, "OK")
+	c.Status(http.StatusCreated)
 }
 
 func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
