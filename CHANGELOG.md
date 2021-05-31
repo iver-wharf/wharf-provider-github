@@ -12,6 +12,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+
+## v2.0.0 (WIP)
+
+- Changed api call order to getToken -> getProvider -> GitHub Operations instead of the previous getProvider -> getToken
+  -> GitHub operations.  (#10)
+- Added AvatarURL and GitURL to the putProject POST. (#10)
+- Updated go from 1.13 -> 1.16. (#10)
+- Updated alpine base image from 3.13.4 -> 3.13.5. (#10)
+- Changed from POST to PATCH calls for tokens to eliminate entry duplication. (#10)
+
 ## v1.2.0 (WIP)
 
 - Added environment var for setting bind address and port. (#14)
