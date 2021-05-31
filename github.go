@@ -59,7 +59,7 @@ func runGitHubHandler(c *gin.Context) {
 		return
 	}
 
-	importer.Provider, err = importer.getProvider(i)
+	importer.Provider, err = importer.getProvider(i, importer.Token)
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get provider. %+v", err))
@@ -116,7 +116,7 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	return token, err
 }
 
-func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
+func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (wharfapi.Provider, error) {
 	var provider wharfapi.Provider
 	var err error
 
@@ -132,9 +132,9 @@ func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, err
 			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
 		}
 	} else {
-		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, importer.Token.TokenID)
+		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, token.TokenID)
 		if err != nil || provider.ProviderID == 0 {
-			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: importer.Token.TokenID})
+			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
 		}
 	}
 	fmt.Println("Provider from db: ", provider)
