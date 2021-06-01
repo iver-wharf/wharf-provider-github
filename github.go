@@ -149,7 +149,7 @@ func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	return client, err
 }
 
-func (importer githubImporter) getBuildDefiniton(owner string, projectName string) string {
+func (importer githubImporter) getBuildDefinition(owner string, projectName string) string {
 	fileContent, _, _, err := importer.GithubClient.Repositories.GetContents(importer.Context, owner, projectName, buildDefinitionFileName, nil)
 	if err != nil {
 		return ""
@@ -203,7 +203,7 @@ func (importer githubImporter) importProject(i importBody) error {
 }
 
 func (importer githubImporter) putProject(repo *github.Repository) error {
-	buildDefinitionStr := importer.getBuildDefiniton(repo.GetOwner().GetLogin(), repo.GetName())
+	buildDefinitionStr := importer.getBuildDefinition(repo.GetOwner().GetLogin(), repo.GetName())
 	project, err := importer.WharfClient.PutProject(
 		wharfapi.Project{
 			Name:            repo.GetName(),
