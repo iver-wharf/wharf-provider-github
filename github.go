@@ -108,7 +108,7 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	} else {
 		token, err = importer.WharfClient.GetToken(i.Token, i.User)
 		if err != nil || token.TokenID == 0 {
-			token, err = importer.WharfClient.PostToken(wharfapi.Token{Token: i.Token, UserName: i.User, ProviderID: importer.Provider.ProviderID})
+			token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User, ProviderID: importer.Provider.ProviderID})
 		}
 	}
 
