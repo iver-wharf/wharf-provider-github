@@ -47,7 +47,7 @@ func runGitHubHandler(c *gin.Context) {
 	importer := githubImporter{
 		Context: ctx,
 		WharfClient: wharfapi.Client{
-			ApiUrl:     os.Getenv("WHARF_API_URL"),
+			APIURL:     os.Getenv("WHARF_API_URL"),
 			AuthHeader: c.GetHeader("Authorization"),
 		},
 	}
@@ -97,7 +97,7 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 	var err error
 
 	if i.TokenID != 0 {
-		token, err = importer.WharfClient.GetTokenById(i.TokenID)
+		token, err = importer.WharfClient.GetTokenByID(i.TokenID)
 		if err != nil {
 			return token, err
 		} else if token.TokenID == 0 {
@@ -121,7 +121,7 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 	var err error
 
 	if i.ProviderID != 0 {
-		provider, err = importer.WharfClient.GetProviderById(i.ProviderID)
+		provider, err = importer.WharfClient.GetProviderByID(i.ProviderID)
 		if err != nil {
 			return provider, err
 		} else if provider.ProviderID == 0 {
@@ -165,7 +165,7 @@ func (importer githubImporter) getBuildDefiniton(owner string, projectName strin
 
 func (importer githubImporter) importProject(i importBody) error {
 	if i.ProjectID != 0 {
-		project, err := importer.WharfClient.GetProjectById(i.ProjectID)
+		project, err := importer.WharfClient.GetProjectByID(i.ProjectID)
 		if err != nil {
 			return err
 		} else if project.ProjectID == 0 {
@@ -211,7 +211,7 @@ func (importer githubImporter) putProject(repo *github.Repository) error {
 			GroupName:       repo.GetOwner().GetLogin(),
 			BuildDefinition: buildDefinitionStr,
 			Description:     repo.GetDescription(),
-			AvatarUrl:       *repo.GetOwner().AvatarURL,
+			AvatarURL:       *repo.GetOwner().AvatarURL,
 			ProviderID:      importer.Provider.ProviderID,
 			GitURL:          *repo.GitURL})
 	if err != nil {
