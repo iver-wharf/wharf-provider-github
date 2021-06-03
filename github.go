@@ -241,7 +241,7 @@ func (importer githubImporter) putProject(repo *github.Repository) error {
 }
 
 func (importer githubImporter) importGroup(groupName string) error {
-	repos, _, err := importer.GithubClient.Repositories.List(importer.Context, "", nil)
+	repos, _, err := importer.GithubClient.Repositories.List(importer.Context, groupName, nil)
 	if err != nil {
 		return err
 	}

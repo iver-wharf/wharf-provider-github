@@ -20,6 +20,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added Swagger spec metadata such as version that equals the version of the
   API, contact information, and license. (#5)
 
+- Fixed importing from a group different than the authenticated user. (#13)
+
 ## v1.1.1 (2021-04-09)
 
 - Added CHANGELOG.md to repository. (!6)
