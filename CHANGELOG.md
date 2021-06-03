@@ -12,7 +12,13 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.1.2 (WIP)
+## v1.2.0 (WIP)
+
+- Added endpoint `GET /version` that returns an object of version data of the
+  API itself. (#5)
+
+- Added Swagger spec metadata such as version that equals the version of the
+  API, contact information, and license. (#5)
 
 - Fixed importing from a group different than the authenticated user. (#13)
 
