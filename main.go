@@ -61,12 +61,15 @@ func main() {
 	r.GET("/import/github/version", getVersionHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	var bindAddress string
-	var bindAddressDefined bool
-	if bindAddress, bindAddressDefined = os.LookupEnv("BIND_ADDRESS"); !bindAddressDefined {
-		bindAddress = "0.0.0.0:8080"
+	_ = r.Run(getBindAddress())
+}
+
+func getBindAddress() string {
+	bindAddress, isBindAddressDefined := os.LookupEnv("BIND_ADDRESS")
+	if !isBindAddressDefined || bindAddress == "" {
+		return "0.0.0.0:8080"
 	}
-	_ = r.Run(bindAddress)
+	return bindAddress
 }
 
 func runPingHandler(c *gin.Context) {
