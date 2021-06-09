@@ -14,7 +14,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.0.0 (WIP)
 
-- Updates wharf-api-client-go 1.2.0 -> 1.3.0 (#10)
+- Updated wharf-api-client-go 1.2.0 -> 1.3.0 (#10)
 
 - Added environment var for setting bind address and port. (#14)
 
@@ -22,14 +22,14 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   Operations instead of the previous getProvider -> getToken -> GitHub
   operations.  (#10)
 
-- Added AvatarURL and GitURL to the putProject POST. (#10)
+- Added AvatarURL and GitURL to the `PUT /api/project` body. (#10)
 
 - Updated go from 1.13 -> 1.16. (#10)
 
 - Updated alpine base image from 3.13.4 -> 3.13.5. (#10)
 
-- Changed from POST to PATCH calls for tokens to eliminate entry duplication.
-  (#10)
+- Changed from POST to PATCH calls for tokens & providers to eliminate entry
+  duplication. (#10)
 
 - Added endpoint `GET /version` that returns an object of version data of the
   API itself. (#5)

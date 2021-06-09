@@ -127,13 +127,10 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
 		}
 	} else {
-		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, token.TokenID)
-		if err != nil || provider.ProviderID == 0 {
-			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
-		}
+		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
 	}
 	fmt.Println("Provider from db: ", provider)
-	return provider, nil
+	return provider, err
 }
 
 
