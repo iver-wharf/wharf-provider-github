@@ -12,17 +12,22 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-
 ## v2.0.0 (WIP)
 
 - Added environment var for setting bind address and port. (#14)
 
-- Changed api call order to getToken -> getProvider -> GitHub Operations instead of the previous getProvider -> getToken
-  -> GitHub operations.  (#10)
+- BREAKING: Changed api call order to getToken -> getProvider -> GitHub
+  Operations instead of the previous getProvider -> getToken -> GitHub
+  operations.  (#10)
+
 - Added AvatarURL and GitURL to the putProject POST. (#10)
+
 - Updated go from 1.13 -> 1.16. (#10)
+
 - Updated alpine base image from 3.13.4 -> 3.13.5. (#10)
-- Changed from POST to PATCH calls for tokens to eliminate entry duplication. (#10)
+
+- Changed from POST to PATCH calls for tokens to eliminate entry duplication.
+  (#10)
 
 - Added endpoint `GET /version` that returns an object of version data of the
   API itself. (#5)
@@ -44,8 +49,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   and bumped said package version from v1.1.0 to v1.2.0. (!7)
 
 - Changed base Docker image to be `alpine:3.13.4` instead of `scratch` to get
-  certificates from the Alpine package manager, APK, instead of embedding a
-  list of certificates inside the repository. (#1)
+  certificates from the Alpine package manager, APK, instead of embedding a list
+  of certificates inside the repository. (#1)
 
 ## v1.1.0 (2021-01-07)
 
