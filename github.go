@@ -104,10 +104,7 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
 		}
 	} else {
-		token, err = importer.WharfClient.GetToken(i.Token, i.User)
-		if err != nil || token.TokenID == 0 {
-			token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
-		}
+		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
 	}
 
 	fmt.Println("Token from db: ", token)
