@@ -3,7 +3,6 @@ module github.com/iver-wharf/wharf-provider-github
 go 1.16
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -12,7 +11,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/iver-wharf/wharf-api-client-go v1.2.0
+	github.com/iver-wharf/wharf-api-client-go v1.3.0
 	github.com/iver-wharf/wharf-core v0.0.0-20210526121942-3bdbd8375f14
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
