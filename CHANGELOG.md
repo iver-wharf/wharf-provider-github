@@ -14,7 +14,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.0.0 (WIP)
 
-- Updated wharf-api-client-go 1.2.0 -> 1.3.0 (#10)
+- Changed version of wharf-api-client-go from 1.2.0 -> 1.3.0 (#10)
 
 - Added environment var for setting bind address and port. (#14)
 
