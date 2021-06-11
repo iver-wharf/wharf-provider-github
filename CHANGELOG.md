@@ -18,9 +18,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added environment var for setting bind address and port. (#14)
 
-- BREAKING: Changed api call order to getToken -> getProvider -> GitHub
-  Operations instead of the previous getProvider -> getToken -> GitHub
-  operations.  (#10)
+- BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
+  order to getToken -> getProvider -> GitHub Operations instead of the previous
+  getProvider -> getToken -> GitHub operations.  (#10)
 
 - Added AvatarURL and GitURL to the `PUT /api/project` body. (#10)
 
