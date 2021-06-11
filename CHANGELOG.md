@@ -24,9 +24,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added AvatarURL and GitURL to the `PUT /api/project` body. (#10)
 
-- Updated go from 1.13 -> 1.16. (#10)
+- Changed version of Go runtime from 1.13 -> 1.16. (#10)
 
-- Updated alpine base image from 3.13.4 -> 3.13.5. (#10)
+- Changed version of alpine base Docker image from 3.13.4 -> 3.13.5. (#10)
 
 - Changed from POST to PATCH calls for tokens & providers to eliminate entry
   duplication. (#10)
