@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/iver-wharf/wharf-core/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/pkg/problem"
 	"os"
 
 	b64 "encoding/base64"
@@ -36,8 +38,8 @@ func runGitHubHandler(c *gin.Context) {
 	i := importBody{}
 	err := c.BindJSON(&i)
 	if err != nil {
-		c.Error(err)
-		c.JSON(http.StatusBadRequest, err.Error())
+		ginutil.WriteInvalidBindError(c, err,
+			"One or more parameters failed to parse when reading the request body for GitHub projects import/refresh")
 		return
 	}
 
@@ -54,37 +56,57 @@ func runGitHubHandler(c *gin.Context) {
 
 	importer.Provider, err = importer.getProvider(i)
 	if err != nil {
-		c.Error(err)
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get provider. %+v", err))
+		ginutil.WriteProblemError(c, err, problem.Response{
+			Type: "prob/provider/github/getting-provider-error",
+			Title: "Error getting GitHub provider",
+			Status: http.StatusBadRequest,
+			Detail: "Unable to get provider.",
+		})
 		return
 	}
 
 	importer.Token, err = importer.getToken(i)
 	if err != nil {
-		c.Error(err)
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to get token. %+v", err))
+		ginutil.WriteProblemError(c, err, problem.Response{
+			Type: "prob/provider/github/getting-token-error",
+			Title: "Error getting token.",
+			Status: http.StatusBadRequest,
+			Detail: "Unable to get token.",
+		})
 		return
 	}
 
 	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
-		c.Error(err)
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to init github connection. %+v", err))
+		ginutil.WriteProblemError(c, err, problem.Response{
+			Type: "prob/provider/github/connection-error",
+			Title: "Error connecting to GitHub.",
+			Status: http.StatusBadRequest,
+			Detail: "Unable to initiate connection to GitHub.",
+		})
 		return
 	}
 
 	if i.ProjectID != 0 || i.Project != "" {
 		err = importer.importProject(i)
 		if err != nil {
-			c.Error(err)
-			c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to import project. %+v", err))
+			ginutil.WriteProblemError(c, err, problem.Response{
+				Type: "prob/provider/github/import-project-error",
+				Title: "Error importing project from GitHub.",
+				Status: http.StatusBadRequest,
+				Detail: "Unable to import project from GitHub.",
+			})
 			return
 		}
 	} else {
 		err = importer.importGroup(i.Group)
 		if err != nil {
-			c.Error(err)
-			c.JSON(http.StatusBadRequest, fmt.Sprintf("Unable to import organization or group. %+v", err))
+			ginutil.WriteProblemError(c, err, problem.Response{
+				Type: "prob/provider/github/import-group-error",
+				Title: "Error importing group from GitHub.",
+				Status: http.StatusBadRequest,
+				Detail: "Unable to import group from GitHub.",
+			})
 			return
 		}
 	}
@@ -113,7 +135,7 @@ func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, err
 		}
 	}
 	fmt.Println("Provider from db: ", provider)
-	return provider, nil
+	return provider, err
 }
 
 func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {

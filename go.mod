@@ -9,7 +9,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/iver-wharf/wharf-api-client-go v1.2.0
-	github.com/iver-wharf/wharf-core v0.0.0-20210526121942-3bdbd8375f14
+	github.com/iver-wharf/wharf-core v0.0.0-20210610091057-c2f9a20c6a64
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
