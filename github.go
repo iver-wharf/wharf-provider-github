@@ -55,17 +55,6 @@ func runGitHubHandler(c *gin.Context) {
 		},
 	}
 
-	importer.Provider, err = importer.getProvider(i)
-	if err != nil {
-		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "/prob/provider/github/getting-provider-error",
-			Title: "Error getting GitHub provider",
-			Status: http.StatusBadGateway,
-			Detail: fmt.Sprintf("Unable to get provider by ID %d or name %s.", i.ProviderID, i.Provider),
-		})
-		return
-	}
-
 	importer.Token, err = importer.getToken(i)
 	if err != nil {
 		ginutil.WriteProblemError(c, err, problem.Response{
@@ -73,6 +62,17 @@ func runGitHubHandler(c *gin.Context) {
 			Title: "Error getting token.",
 			Status: http.StatusBadGateway,
 			Detail: fmt.Sprintf("Unable to get token by ID %d or create new token.", i.TokenID),
+		})
+		return
+	}
+
+	importer.Provider, err = importer.getProvider(i, importer.Token)
+	if err != nil {
+		ginutil.WriteProblemError(c, err, problem.Response{
+			Type: "/prob/provider/github/getting-provider-error",
+			Title: "Error getting GitHub provider",
+			Status: http.StatusBadGateway,
+			Detail: fmt.Sprintf("Unable to get provider by ID %d or name %s.", i.ProviderID, i.Provider),
 		})
 		return
 	}
