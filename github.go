@@ -50,7 +50,7 @@ func runGitHubHandler(c *gin.Context) {
 	importer := githubImporter{
 		Context: ctx,
 		WharfClient: wharfapi.Client{
-			ApiUrl:     os.Getenv("WHARF_API_URL"),
+			APIURL:     os.Getenv("WHARF_API_URL"),
 			AuthHeader: c.GetHeader("Authorization"),
 		},
 	}
@@ -115,11 +115,31 @@ func runGitHubHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, error) {
+func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
+	var token wharfapi.Token
+	var err error
+
+	if i.TokenID != 0 {
+		token, err = importer.WharfClient.GetTokenByID(i.TokenID)
+		if err != nil {
+			return token, err
+		} else if token.TokenID == 0 {
+			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
+		}
+	} else {
+		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
+	}
+
+	fmt.Println("Token from db: ", token)
+	return token, err
+}
+
+func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (wharfapi.Provider, error) {
 	var provider wharfapi.Provider
 	var err error
+
 	if i.ProviderID != 0 {
-		provider, err = importer.WharfClient.GetProviderById(i.ProviderID)
+		provider, err = importer.WharfClient.GetProviderByID(i.ProviderID)
 		if err != nil {
 			return provider, err
 		} else if provider.ProviderID == 0 {
@@ -130,42 +150,12 @@ func (importer githubImporter) getProvider(i importBody) (wharfapi.Provider, err
 			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
 		}
 	} else {
-		provider, err = importer.WharfClient.GetProvider("github", i.URL, i.UploadURL, importer.Token.TokenID)
-		if err != nil || provider.ProviderID == 0 {
-			provider, err = importer.WharfClient.PostProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL})
-		}
+		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
 	}
 	fmt.Println("Provider from db: ", provider)
 	return provider, err
 }
 
-func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
-	var token wharfapi.Token
-	var err error
-
-	if importer.Provider.ProviderID == 0 {
-		return token, fmt.Errorf("provider not found")
-	}
-
-	if i.TokenID != 0 {
-		token, err = importer.WharfClient.GetTokenById(i.TokenID)
-		if err != nil {
-			return token, err
-		} else if token.TokenID == 0 {
-			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
-		} else if token.ProviderID != importer.Provider.ProviderID {
-			err = fmt.Errorf(fmt.Sprintf("Token with invalid provider id %v.", i.ProviderID))
-		}
-	} else {
-		token, err = importer.WharfClient.GetToken(i.Token, i.User)
-		if err != nil || token.TokenID == 0 {
-			token, err = importer.WharfClient.PostToken(wharfapi.Token{Token: i.Token, UserName: i.User, ProviderID: importer.Provider.ProviderID})
-		}
-	}
-
-	fmt.Println("Token from db: ", token)
-	return token, err
-}
 
 func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: importer.Token.Token})
@@ -174,7 +164,7 @@ func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	return client, err
 }
 
-func (importer githubImporter) getBuildDefiniton(owner string, projectName string) string {
+func (importer githubImporter) getBuildDefinition(owner string, projectName string) string {
 	fileContent, _, _, err := importer.GithubClient.Repositories.GetContents(importer.Context, owner, projectName, buildDefinitionFileName, nil)
 	if err != nil {
 		return ""
@@ -190,7 +180,7 @@ func (importer githubImporter) getBuildDefiniton(owner string, projectName strin
 
 func (importer githubImporter) importProject(i importBody) error {
 	if i.ProjectID != 0 {
-		project, err := importer.WharfClient.GetProjectById(i.ProjectID)
+		project, err := importer.WharfClient.GetProjectByID(i.ProjectID)
 		if err != nil {
 			return err
 		} else if project.ProjectID == 0 {
@@ -228,8 +218,7 @@ func (importer githubImporter) importProject(i importBody) error {
 }
 
 func (importer githubImporter) putProject(repo *github.Repository) error {
-	buildDefinitionStr := importer.getBuildDefiniton(repo.GetOwner().GetLogin(), repo.GetName())
-
+	buildDefinitionStr := importer.getBuildDefinition(repo.GetOwner().GetLogin(), repo.GetName())
 	project, err := importer.WharfClient.PutProject(
 		wharfapi.Project{
 			Name:            repo.GetName(),
@@ -237,7 +226,9 @@ func (importer githubImporter) putProject(repo *github.Repository) error {
 			GroupName:       repo.GetOwner().GetLogin(),
 			BuildDefinition: buildDefinitionStr,
 			Description:     repo.GetDescription(),
-			ProviderID:      importer.Provider.ProviderID})
+			AvatarURL:       *repo.GetOwner().AvatarURL,
+			ProviderID:      importer.Provider.ProviderID,
+			GitURL:          *repo.GitURL})
 	if err != nil {
 		return err
 	} else if project.ProjectID == 0 {
