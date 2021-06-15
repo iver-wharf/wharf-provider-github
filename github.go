@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/iver-wharf/wharf-core/pkg/ginutil"
-	"github.com/iver-wharf/wharf-core/pkg/problem"
 	"os"
 
 	b64 "encoding/base64"
@@ -12,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/github"
 	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi"
+	"github.com/iver-wharf/wharf-core/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/pkg/problem"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -31,8 +31,9 @@ type githubImporter struct {
 // @Produce json
 // @Param import body importBody _ "import object"
 // @Success 201 "Successfully imported"
-// @Failure 400 {object} string "Bad request"
-// @Failure 401 {object} string "Unauthorized or missing jwt token"
+// @Failure 400 {object} problem.Response "Bad request"
+// @Failure 401 {object} problem.Response "Unauthorized or missing jwt token"
+// @Failure 502 {object} problem.Response "Bad gateway"
 // @Router /github [post]
 func runGitHubHandler(c *gin.Context) {
 	i := importBody{}
@@ -57,10 +58,10 @@ func runGitHubHandler(c *gin.Context) {
 	importer.Provider, err = importer.getProvider(i)
 	if err != nil {
 		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "prob/provider/github/getting-provider-error",
+			Type: "/prob/provider/github/getting-provider-error",
 			Title: "Error getting GitHub provider",
-			Status: http.StatusBadRequest,
-			Detail: "Unable to get provider.",
+			Status: http.StatusBadGateway,
+			Detail: fmt.Sprintf("Unable to get provider by ID %d or name %s.", i.ProviderID, i.Provider),
 		})
 		return
 	}
@@ -68,10 +69,10 @@ func runGitHubHandler(c *gin.Context) {
 	importer.Token, err = importer.getToken(i)
 	if err != nil {
 		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "prob/provider/github/getting-token-error",
+			Type: "/prob/provider/github/getting-token-error",
 			Title: "Error getting token.",
-			Status: http.StatusBadRequest,
-			Detail: "Unable to get token.",
+			Status: http.StatusBadGateway,
+			Detail: fmt.Sprintf("Unable to get token by ID %d or create new token.", i.TokenID),
 		})
 		return
 	}
@@ -79,9 +80,9 @@ func runGitHubHandler(c *gin.Context) {
 	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
 		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "prob/provider/github/connection-error",
+			Type: "/prob/provider/github/connection-error",
 			Title: "Error connecting to GitHub.",
-			Status: http.StatusBadRequest,
+			Status: http.StatusBadGateway,
 			Detail: "Unable to initiate connection to GitHub.",
 		})
 		return
@@ -91,10 +92,10 @@ func runGitHubHandler(c *gin.Context) {
 		err = importer.importProject(i)
 		if err != nil {
 			ginutil.WriteProblemError(c, err, problem.Response{
-				Type: "prob/provider/github/import-project-error",
+				Type: "/prob/provider/github/import-project-error",
 				Title: "Error importing project from GitHub.",
 				Status: http.StatusBadRequest,
-				Detail: "Unable to import project from GitHub.",
+				Detail: fmt.Sprintf("Unable to import project %s (id: %d) from GitHub.", i.Project, i.ProjectID),
 			})
 			return
 		}
@@ -102,10 +103,10 @@ func runGitHubHandler(c *gin.Context) {
 		err = importer.importGroup(i.Group)
 		if err != nil {
 			ginutil.WriteProblemError(c, err, problem.Response{
-				Type: "prob/provider/github/import-group-error",
+				Type: "/prob/provider/github/import-group-error",
 				Title: "Error importing group from GitHub.",
 				Status: http.StatusBadRequest,
-				Detail: "Unable to import group from GitHub.",
+				Detail: fmt.Sprintf("Unable to import group %s from GitHub.", i.Group),
 			})
 			return
 		}
