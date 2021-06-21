@@ -8,6 +8,10 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/problem"
 )
 
+// WriteAPIReadError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/api/unexpected-api-read-error".
+//
+// Meant to be used on unexpected error when reading data using the Wharf API.
 func WriteAPIReadError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/unexpected-api-read-error",
@@ -17,6 +21,10 @@ func WriteAPIReadError(c *gin.Context, err error, detail string) {
 	})
 }
 
+// WriteAPIWriteError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/api/unexpected-api-write-error".
+//
+// Meant to be used on unexpected error when writing data using the Wharf API.
 func WriteAPIWriteError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/unexpected-api-write-error",
@@ -26,6 +34,10 @@ func WriteAPIWriteError(c *gin.Context, err error, detail string) {
 	})
 }
 
+// WriteResponseFormatError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/provider/unexpected-response-format".
+//
+// Meant to be used on unexpected error when the response format does not match our expectations.
 func WriteResponseFormatError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/unexpected-response-format",
@@ -35,6 +47,10 @@ func WriteResponseFormatError(c *gin.Context, err error, detail string) {
 	})
 }
 
+// WriteFetchBuildDefinitionError uses WriteProblemError to write a 400 "Bad Request"
+// response with the type "/prob/provider/fetch-build-definition".
+//
+// Meant to be used on error when fetching the build definition.
 func WriteFetchBuildDefinitionError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/fetch-build-definition",
@@ -44,6 +60,10 @@ func WriteFetchBuildDefinitionError(c *gin.Context, err error, detail string) {
 	})
 }
 
+// WriteComposingProviderDataError uses WriteProblemError to write a 400 "Bad Request"
+// response with the type "/prob/provider/composing-provider-data".
+//
+// Meant to be used on error when composing provider data.
 func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/composing-provider-data",
@@ -53,6 +73,10 @@ func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 	})
 }
 
+// WriteTriggerError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/build/unexpected-trigger-error".
+//
+// Meant to be used on unexpected error during build process regarding a trigger.
 func WriteTriggerError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
 		Type: "/prob/build/unexpected-trigger-error",
