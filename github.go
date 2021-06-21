@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/iver-wharf/wharf-provider-github/helpers/ginutilext"
 	"os"
 
 	b64 "encoding/base64"
@@ -14,6 +13,7 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	_ "github.com/iver-wharf/wharf-core/pkg/problem"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
+	"github.com/iver-wharf/wharf-provider-github/helpers/ginutilext"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 )
@@ -87,7 +87,7 @@ func runGitHubHandler(c *gin.Context) {
 		err = importer.importGroup(i.Group)
 		if err != nil {
 			ginutilext.WriteAPIWriteError(c, err,
-				fmt.Sprintf("Unable to import group %q from GitHub.", i.Group),)
+				fmt.Sprintf("Unable to import group %q from GitHub.", i.Group))
 			return
 		}
 	}
