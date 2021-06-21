@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iver-wharf/wharf-provider-github/helpers/ginutilext"
 	"os"
 
 	b64 "encoding/base64"
@@ -11,7 +12,7 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi"
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
-	"github.com/iver-wharf/wharf-core/pkg/problem"
+	_ "github.com/iver-wharf/wharf-core/pkg/problem"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -55,59 +56,38 @@ func runGitHubHandler(c *gin.Context) {
 		},
 	}
 
-	importer.Token, err = importer.getToken(i)
+	importer.Token, err = importer.getToken(c, i)
 	if err != nil {
-		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "/prob/provider/github/getting-token-error",
-			Title: "Error getting token.",
-			Status: http.StatusBadGateway,
-			Detail: fmt.Sprintf("Unable to get token by ID %d or create new token.", i.TokenID),
-		})
 		return
 	}
 
 	importer.Provider, err = importer.getProvider(i, importer.Token)
 	if err != nil {
-		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "/prob/provider/github/getting-provider-error",
-			Title: "Error getting GitHub provider",
-			Status: http.StatusBadGateway,
-			Detail: fmt.Sprintf("Unable to get provider by ID %d or name %s.", i.ProviderID, i.Provider),
-		})
+		ginutilext.WriteAPIReadError(c, err,
+			fmt.Sprintf("Unable to get GitHub provider by ID %v or name %q", i.ProviderID, i.Provider))
 		return
 	}
 
 	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
-		ginutil.WriteProblemError(c, err, problem.Response{
-			Type: "/prob/provider/github/connection-error",
-			Title: "Error connecting to GitHub.",
-			Status: http.StatusBadGateway,
-			Detail: "Unable to initiate connection to GitHub.",
-		})
+		ginutilext.WriteAPIReadError(c, err,
+			fmt.Sprintf("Unable to parse provider url %q or upload url %q",
+				importer.Provider.URL, importer.Provider.UploadURL))
 		return
 	}
 
 	if i.ProjectID != 0 || i.Project != "" {
 		err = importer.importProject(i)
 		if err != nil {
-			ginutil.WriteProblemError(c, err, problem.Response{
-				Type: "/prob/provider/github/import-project-error",
-				Title: "Error importing project from GitHub.",
-				Status: http.StatusBadRequest,
-				Detail: fmt.Sprintf("Unable to import project %s (id: %d) from GitHub.", i.Project, i.ProjectID),
-			})
+			ginutilext.WriteAPIWriteError(c, err,
+				fmt.Sprintf("Unable to import project %q (id: %v) from GitHub.", i.Project, i.ProjectID))
 			return
 		}
 	} else {
 		err = importer.importGroup(i.Group)
 		if err != nil {
-			ginutil.WriteProblemError(c, err, problem.Response{
-				Type: "/prob/provider/github/import-group-error",
-				Title: "Error importing group from GitHub.",
-				Status: http.StatusBadRequest,
-				Detail: fmt.Sprintf("Unable to import group %s from GitHub.", i.Group),
-			})
+			ginutilext.WriteAPIWriteError(c, err,
+				fmt.Sprintf("Unable to import group %q from GitHub.", i.Group),)
 			return
 		}
 	}
@@ -115,19 +95,30 @@ func runGitHubHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
+func (importer githubImporter) getToken(c *gin.Context, i importBody) (wharfapi.Token, error) {
 	var token wharfapi.Token
 	var err error
 
 	if i.TokenID != 0 {
 		token, err = importer.WharfClient.GetTokenByID(i.TokenID)
 		if err != nil {
-			return token, err
+			ginutilext.WriteAPIReadError(c, err,
+				fmt.Sprintf(
+					"Unable to get token by id %v. Likely because of a failed request or malformed response.",
+					i.TokenID))
 		} else if token.TokenID == 0 {
+			ginutilext.WriteAPIReadError(c, err,
+				fmt.Sprintf("Token with id %v not found", i.TokenID))
 			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
 		}
 	} else {
 		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
+		if err != nil {
+			ginutilext.WriteAPIWriteError(c, err,
+				fmt.Sprintf(
+					"Unable to create token for %q. Likely because of a failed request or malformed response.",
+					i.User))
+		}
 	}
 
 	fmt.Println("Token from db: ", token)
@@ -145,9 +136,9 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 		} else if provider.ProviderID == 0 {
 			err = fmt.Errorf("provider with id %v not found", i.ProviderID)
 		} else if provider.URL != i.URL {
-			err = fmt.Errorf("invalid url in provider %v", provider.URL)
+			err = fmt.Errorf("invalid url in provider %q", provider.URL)
 		} else if provider.UploadURL != i.UploadURL {
-			err = fmt.Errorf("invalid upload url in provider %v", provider.UploadURL)
+			err = fmt.Errorf("invalid upload url in provider %q", provider.UploadURL)
 		}
 	} else {
 		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
