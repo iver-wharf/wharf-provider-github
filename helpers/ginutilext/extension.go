@@ -55,7 +55,7 @@ func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 
 func WriteTriggerError(c *gin.Context, err error, detail string) {
 	ginutil.WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/unexpected-trigger-error",
+		Type: "/prob/build/unexpected-trigger-error",
 		Title: "Unexpected trigger error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
