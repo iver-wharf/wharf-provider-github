@@ -12,6 +12,25 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.1.0 (WIP)
+
+- Added config loading from YAML files using
+  `github.com/iver-wharf/wharf-core/pkg/config` together with new config models
+  for configuring wharf-provider-github. See `config.go` or the reference
+  documentation on the `Config` type for information on how to configure
+  wharf-provider-github. (#19)
+
+- Added config for setting bind address and port. (#14, #19)
+
+  - Environment variable: `WHARF_HTTP_BINDADDRESS`
+  - YAML: `http.bindAddress`
+
+- Added config for loading extra certificates bundle, in addition to the
+  system's certificates. (#19)
+
+  - Environment variable: `WHARF_CA_CERTSFILE`
+  - YAML: `ca.certsFile`
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
@@ -32,7 +51,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed from POST to PATCH calls for tokens & providers to eliminate entry
   duplication. (#10)
 
-- Added environment var for setting bind address and port. (#14)
+- Added environment var `BIND_ADDRESS` for setting bind address and port. (#14)
 
 - Added endpoint `GET /version` that returns an object of version data of the
   API itself. (#5)
