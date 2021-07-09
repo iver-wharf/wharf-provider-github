@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iver-wharf/wharf-core/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
 	"github.com/iver-wharf/wharf-provider-github/docs"
 
 	"github.com/gin-contrib/cors"
@@ -31,6 +33,8 @@ type importBody struct {
 
 const buildDefinitionFileName = ".wharf-ci.yml"
 
+var log = logger.NewScoped("WHARF-PROVIDER-GITHUB")
+
 // @title Wharf provider API for GitHub
 // @description Wharf backend API for integrating GitHub repositories with
 // @description the Wharf main API.
@@ -41,18 +45,27 @@ const buildDefinitionFileName = ".wharf-ci.yml"
 // @contact.email wharf@iver.se
 // @basePath /import
 func main() {
+	logger.AddOutput(logger.LevelDebug, consolepretty.Default)
+
 	if err := loadEmbeddedVersionFile(); err != nil {
-		fmt.Println("Failed to read embedded version.yaml file:", err)
+		log.Error().WithError(err).Message("Failed to read embedded version.yaml.")
 		os.Exit(1)
 	}
 
 	docs.SwaggerInfo.Version = AppVersion.Version
 
-	r := gin.Default()
+	gin.DefaultWriter = ginutil.DefaultLoggerWriter
+	gin.DefaultErrorWriter = ginutil.DefaultLoggerWriter
+
+	r := gin.New()
+	r.Use(
+		ginutil.DefaultLoggerHandler,
+		gin.Recovery(),
+	)
 
 	allowCors, ok := os.LookupEnv("ALLOW_CORS")
 	if ok && allowCors == "YES" {
-		fmt.Printf("Allowing CORS\n")
+		log.Info().Message("Allowing all origins in CORS.")
 		r.Use(cors.Default())
 	}
 
