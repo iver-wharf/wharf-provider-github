@@ -13,7 +13,6 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	_ "github.com/iver-wharf/wharf-core/pkg/problem"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
-	"github.com/iver-wharf/wharf-provider-github/helpers/ginutilext"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 )
@@ -63,14 +62,14 @@ func runGitHubHandler(c *gin.Context) {
 
 	importer.Provider, err = importer.getProvider(i, importer.Token)
 	if err != nil {
-		ginutilext.WriteAPIReadError(c, err,
+		ginutil.WriteAPIClientReadError(c, err,
 			fmt.Sprintf("Unable to get GitHub provider by ID %v or name %q", i.ProviderID, i.Provider))
 		return
 	}
 
 	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
-		ginutilext.WriteAPIReadError(c, err,
+		ginutil.WriteAPIClientReadError(c, err,
 			fmt.Sprintf("Unable to parse provider url %q or upload url %q",
 				importer.Provider.URL, importer.Provider.UploadURL))
 		return
@@ -79,14 +78,14 @@ func runGitHubHandler(c *gin.Context) {
 	if i.ProjectID != 0 || i.Project != "" {
 		err = importer.importProject(i)
 		if err != nil {
-			ginutilext.WriteAPIWriteError(c, err,
+			ginutil.WriteAPIClientWriteError(c, err,
 				fmt.Sprintf("Unable to import project %q (id: %v) from GitHub.", i.Project, i.ProjectID))
 			return
 		}
 	} else {
 		err = importer.importGroup(i.Group)
 		if err != nil {
-			ginutilext.WriteAPIWriteError(c, err,
+			ginutil.WriteAPIClientWriteError(c, err,
 				fmt.Sprintf("Unable to import group %q from GitHub.", i.Group))
 			return
 		}
@@ -102,19 +101,19 @@ func (importer githubImporter) getToken(c *gin.Context, i importBody) (wharfapi.
 	if i.TokenID != 0 {
 		token, err = importer.WharfClient.GetTokenByID(i.TokenID)
 		if err != nil {
-			ginutilext.WriteAPIReadError(c, err,
+			ginutil.WriteAPIClientReadError(c, err,
 				fmt.Sprintf(
 					"Unable to get token by id %v. Likely because of a failed request or malformed response.",
 					i.TokenID))
 		} else if token.TokenID == 0 {
-			ginutilext.WriteAPIReadError(c, err,
+			ginutil.WriteAPIClientReadError(c, err,
 				fmt.Sprintf("Token with id %v not found", i.TokenID))
 			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
 		}
 	} else {
 		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
 		if err != nil {
-			ginutilext.WriteAPIWriteError(c, err,
+			ginutil.WriteAPIClientWriteError(c, err,
 				fmt.Sprintf(
 					"Unable to create token for %q. Likely because of a failed request or malformed response.",
 					i.User))
