@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.0.0 (WIP)
+## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
   order to getToken -> getProvider -> GitHub Operations instead of the previous
@@ -22,9 +22,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed version of wharf-api-client-go from 1.2.0 -> 1.3.0 (#10)
 
-- Changed version of Go runtime from 1.13 -> 1.16. (#10)
+- Changed version of Go runtime from 1.13 -> 1.16. (#5)
 
-- Changed version of alpine base Docker image from 3.13.4 -> 3.13.5. (#10)
+- Changed version of Docker base images:
+
+  - Alpine: 3.13.4 -> 3.14.0 (#10, #17)
+  - Golang: 1.13.4 -> 1.16.5 (#5, #17)
 
 - Changed from POST to PATCH calls for tokens & providers to eliminate entry
   duplication. (#10)
