@@ -47,9 +47,6 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Fixed importing from a group different than the authenticated user. (#13)
 
-- Changed to return IETF RFC-7807 compatible problem responses on failures
-  instead of solely JSON-formatted strings. (#16)
-
 ## v1.1.1 (2021-04-09)
 
 - Added CHANGELOG.md to repository. (!6)
