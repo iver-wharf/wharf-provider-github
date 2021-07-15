@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.1.0 (WIP)
+
+- Changed to return IETF RFC-7807 compatible problem responses on failures
+  instead of solely JSON-formatted strings. (#16)
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
