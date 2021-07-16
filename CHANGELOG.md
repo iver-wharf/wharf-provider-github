@@ -31,6 +31,13 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   - Environment variable: `WHARF_CA_CERTSFILE`
   - YAML: `ca.certsFile`
 
+- Added logging library `github.com/iver-wharf/wharf-core/pkg/logger` instead
+  of `fmt.Println` throughout the repository, as well as the Gin integration
+  from `github.com/iver-wharf/wharf-core/pkg/ginutil`. (#20)
+
+- Changed version of `github.com/iver-wharf/wharf-core` from pre release to
+  v1.0.0 (#19)
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call

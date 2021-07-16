@@ -48,8 +48,6 @@ func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("from json: ", i)
-
 	ctx := context.Background()
 	importer := githubImporter{
 		Context: ctx,
@@ -114,7 +112,7 @@ func (importer githubImporter) getToken(i importBody) (wharfapi.Token, error) {
 		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
 	}
 
-	fmt.Println("Token from db: ", token)
+	log.Debug().WithUint("tokenId", token.TokenID).Message("Found token from DB.")
 	return token, err
 }
 
@@ -136,7 +134,10 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 	} else {
 		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
 	}
-	fmt.Println("Provider from db: ", provider)
+	log.Debug().
+		WithUint("providerId", provider.ProviderID).
+		WithString("providerName", provider.Name).
+		Message("Found provider from DB.")
 	return provider, err
 }
 

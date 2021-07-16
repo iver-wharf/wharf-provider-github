@@ -14,7 +14,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/iver-wharf/wharf-api-client-go v1.3.0
-	github.com/iver-wharf/wharf-core v0.0.0-20210713075837-df61b20326b0
+	github.com/iver-wharf/wharf-core v1.0.0
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
