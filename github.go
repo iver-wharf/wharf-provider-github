@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	b64 "encoding/base64"
 	"net/http"
@@ -14,6 +13,14 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 )
+
+type githubImporterModule struct {
+	config *Config
+}
+
+func (m githubImporterModule) register(r gin.IRoutes) {
+	r.POST("/import/github", m.runGitHubHandler)
+}
 
 type githubImporter struct {
 	GithubClient *github.Client
@@ -32,7 +39,7 @@ type githubImporter struct {
 // @Failure 400 {object} string "Bad request"
 // @Failure 401 {object} string "Unauthorized or missing jwt token"
 // @Router /github [post]
-func runGitHubHandler(c *gin.Context) {
+func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 	i := importBody{}
 	err := c.BindJSON(&i)
 	if err != nil {
@@ -45,7 +52,7 @@ func runGitHubHandler(c *gin.Context) {
 	importer := githubImporter{
 		Context: ctx,
 		WharfClient: wharfapi.Client{
-			APIURL:     os.Getenv("WHARF_API_URL"),
+			APIURL:     m.config.API.URL,
 			AuthHeader: c.GetHeader("Authorization"),
 		},
 	}
