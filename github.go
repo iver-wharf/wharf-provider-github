@@ -37,7 +37,7 @@ type githubImporter struct {
 // @Router /github [post]
 func runGitHubHandler(c *gin.Context) {
 	i := importBody{}
-	err := c.BindJSON(&i)
+	err := c.ShouldBindJSON(&i)
 	if err != nil {
 		ginutil.WriteInvalidBindError(c, err,
 			"One or more parameters failed to parse when reading the request body for GitHub projects import/refresh")
@@ -55,8 +55,9 @@ func runGitHubHandler(c *gin.Context) {
 		},
 	}
 
-	importer.Token, err = importer.getToken(c, i)
-	if err != nil {
+	var ok bool
+	importer.Token, ok = importer.getTokenWritesProblem(c, i)
+	if !ok {
 		return
 	}
 
@@ -94,7 +95,7 @@ func runGitHubHandler(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (importer githubImporter) getToken(c *gin.Context, i importBody) (wharfapi.Token, error) {
+func (importer githubImporter) getTokenWritesProblem(c *gin.Context, i importBody) (wharfapi.Token, bool) {
 	var token wharfapi.Token
 	var err error
 
@@ -106,9 +107,9 @@ func (importer githubImporter) getToken(c *gin.Context, i importBody) (wharfapi.
 					"Unable to get token by id %v. Likely because of a failed request or malformed response.",
 					i.TokenID))
 		} else if token.TokenID == 0 {
+			err = fmt.Errorf("token with id %v not found", i.TokenID)
 			ginutil.WriteAPIClientReadError(c, err,
 				fmt.Sprintf("Token with id %v not found", i.TokenID))
-			err = fmt.Errorf(fmt.Sprintf("Token with id %v not found", i.TokenID))
 		}
 	} else {
 		token, err = importer.WharfClient.PutToken(wharfapi.Token{Token: i.Token, UserName: i.User})
@@ -121,7 +122,7 @@ func (importer githubImporter) getToken(c *gin.Context, i importBody) (wharfapi.
 	}
 
 	fmt.Println("Token from db: ", token)
-	return token, err
+	return token, err == nil
 }
 
 func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (wharfapi.Provider, error) {
