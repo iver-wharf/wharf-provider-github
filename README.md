@@ -45,7 +45,7 @@ and through optional config files. See the docs on the `Config` type over at:
    $ cd wharf-provider-github
 
    # Generate the files into docs/
-   $ swag init --parseDependency --parseDepth 1
+   $ swag init --parseDependency --parseDepth 2
    ```
 
 4. Start hacking with your favorite tool. For example VS Code, GoLand,
