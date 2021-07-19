@@ -11,7 +11,6 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi"
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
-	_ "github.com/iver-wharf/wharf-core/pkg/problem"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
