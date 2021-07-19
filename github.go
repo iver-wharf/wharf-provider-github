@@ -105,6 +105,7 @@ func (importer githubImporter) getTokenWritesProblem(c *gin.Context, i importBod
 				fmt.Sprintf(
 					"Unable to get token by ID %d. Likely because of a failed request or malformed response.",
 					i.TokenID))
+			return wharfapi.Token{}, false
 		} else if token.TokenID == 0 {
 			err = fmt.Errorf("token with ID %d not found", i.TokenID)
 			ginutil.WriteAPIClientReadError(c, err,
@@ -117,11 +118,12 @@ func (importer githubImporter) getTokenWritesProblem(c *gin.Context, i importBod
 				fmt.Sprintf(
 					"Unable to create token for user %q. Likely because of a failed request or malformed response.",
 					i.User))
+			return wharfapi.Token{}, false
 		}
 	}
 
 	fmt.Println("Token from db: ", token)
-	return token, err == nil
+	return token, true
 }
 
 func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (wharfapi.Provider, error) {
