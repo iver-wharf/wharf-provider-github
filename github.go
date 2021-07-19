@@ -147,7 +147,6 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 	return provider, err
 }
 
-
 func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: importer.Token.Token})
 	tc := oauth2.NewClient(importer.Context, ts)
