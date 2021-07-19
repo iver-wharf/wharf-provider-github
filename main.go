@@ -2,10 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iver-wharf/wharf-core/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/pkg/logger"
 	"github.com/iver-wharf/wharf-provider-github/docs"
+	"github.com/iver-wharf/wharf-provider-github/internal/httputils"
 
 	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
@@ -31,6 +35,8 @@ type importBody struct {
 
 const buildDefinitionFileName = ".wharf-ci.yml"
 
+var log = logger.NewScoped("WHARF-PROVIDER-GITHUB")
+
 // @title Wharf provider API for GitHub
 // @description Wharf backend API for integrating GitHub repositories with
 // @description the Wharf main API.
@@ -41,35 +47,52 @@ const buildDefinitionFileName = ".wharf-ci.yml"
 // @contact.email wharf@iver.se
 // @basePath /import
 func main() {
-	if err := loadEmbeddedVersionFile(); err != nil {
-		fmt.Println("Failed to read embedded version.yaml file:", err)
+	var (
+		config Config
+		err    error
+	)
+	if err = loadEmbeddedVersionFile(); err != nil {
+		log.Error().WithError(err).Message("Failed to read embedded version.yaml.")
+		os.Exit(1)
+	}
+	if config, err = loadConfig(); err != nil {
+		fmt.Println("Failed to read config:", err)
 		os.Exit(1)
 	}
 
 	docs.SwaggerInfo.Version = AppVersion.Version
 
-	r := gin.Default()
+	if config.CA.CertsFile != "" {
+		client, err := httputils.NewClientWithCerts(config.CA.CertsFile)
+		if err != nil {
+			fmt.Println("Failed to get net/http.Client with certs:", err)
+			log.Error().WithError(err).Message("Failed to get net/http.Client with certs.")
+			os.Exit(1)
+		}
+		http.DefaultClient = client
+	}
 
-	allowCors, ok := os.LookupEnv("ALLOW_CORS")
-	if ok && allowCors == "YES" {
-		fmt.Printf("Allowing CORS\n")
+	gin.DefaultWriter = ginutil.DefaultLoggerWriter
+	gin.DefaultErrorWriter = ginutil.DefaultLoggerWriter
+
+	r := gin.New()
+	r.Use(
+		ginutil.DefaultLoggerHandler,
+		ginutil.RecoverProblem,
+	)
+
+	if config.HTTP.CORS.AllowAllOrigins {
+		log.Info().Message("Allowing all origins in CORS.")
 		r.Use(cors.Default())
 	}
 
+	githubImporterModule{config: &config}.register(r)
+
 	r.GET("/", runPingHandler)
-	r.POST("/import/github", runGitHubHandler)
 	r.GET("/import/github/version", getVersionHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	_ = r.Run(getBindAddress())
-}
-
-func getBindAddress() string {
-	bindAddress, isBindAddressDefined := os.LookupEnv("BIND_ADDRESS")
-	if !isBindAddressDefined || bindAddress == "" {
-		return "0.0.0.0:8080"
-	}
-	return bindAddress
+	_ = r.Run(config.HTTP.BindAddress)
 }
 
 func runPingHandler(c *gin.Context) {

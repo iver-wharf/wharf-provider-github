@@ -14,6 +14,30 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.1.0 (WIP)
 
+- Added config loading from YAML files using
+  `github.com/iver-wharf/wharf-core/pkg/config` together with new config models
+  for configuring wharf-provider-github. See `config.go` or the reference
+  documentation on the `Config` type for information on how to configure
+  wharf-provider-github. (#19)
+
+- Added config for setting bind address and port. (#14, #19)
+
+  - Environment variable: `WHARF_HTTP_BINDADDRESS`
+  - YAML: `http.bindAddress`
+
+- Added config for loading extra certificates bundle, in addition to the
+  system's certificates. (#19)
+
+  - Environment variable: `WHARF_CA_CERTSFILE`
+  - YAML: `ca.certsFile`
+
+- Added logging library `github.com/iver-wharf/wharf-core/pkg/logger` instead
+  of `fmt.Println` throughout the repository, as well as the Gin integration
+  from `github.com/iver-wharf/wharf-core/pkg/ginutil`. (#20)
+
+- Changed version of `github.com/iver-wharf/wharf-core` from pre release to
+  v1.0.0 (#19)
+
 - Changed to return IETF RFC-7807 compatible problem responses on failures
   instead of solely JSON-formatted strings. (#16)
 
@@ -37,7 +61,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed from POST to PATCH calls for tokens & providers to eliminate entry
   duplication. (#10)
 
-- Added environment var for setting bind address and port. (#14)
+- Added environment var `BIND_ADDRESS` for setting bind address and port. (#14)
 
 - Added endpoint `GET /version` that returns an object of version data of the
   API itself. (#5)

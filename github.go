@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	b64 "encoding/base64"
 	"net/http"
@@ -15,6 +14,14 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 )
+
+type githubImporterModule struct {
+	config *Config
+}
+
+func (m githubImporterModule) register(r gin.IRoutes) {
+	r.POST("/import/github", m.runGitHubHandler)
+}
 
 type githubImporter struct {
 	GithubClient *github.Client
@@ -34,7 +41,7 @@ type githubImporter struct {
 // @Failure 401 {object} problem.Response "Unauthorized or missing jwt token"
 // @Failure 502 {object} problem.Response "Bad gateway"
 // @Router /github [post]
-func runGitHubHandler(c *gin.Context) {
+func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 	i := importBody{}
 	err := c.ShouldBindJSON(&i)
 	if err != nil {
@@ -43,13 +50,11 @@ func runGitHubHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("from json: ", i)
-
 	ctx := context.Background()
 	importer := githubImporter{
 		Context: ctx,
 		WharfClient: wharfapi.Client{
-			APIURL:     os.Getenv("WHARF_API_URL"),
+			APIURL:     m.config.API.URL,
 			AuthHeader: c.GetHeader("Authorization"),
 		},
 	}
@@ -122,7 +127,7 @@ func (importer githubImporter) getTokenWritesProblem(c *gin.Context, i importBod
 		}
 	}
 
-	fmt.Println("Token from db: ", token)
+	log.Debug().WithUint("tokenId", token.TokenID).Message("Found token from DB.")
 	return token, true
 }
 
@@ -144,7 +149,10 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 	} else {
 		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
 	}
-	fmt.Println("Provider from db: ", provider)
+	log.Debug().
+		WithUint("providerId", provider.ProviderID).
+		WithString("providerName", provider.Name).
+		Message("Found provider from DB.")
 	return provider, err
 }
 

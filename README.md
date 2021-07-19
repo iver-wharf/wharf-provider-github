@@ -17,6 +17,12 @@ from github.com, importing from GitHub EE is not well tested.
 - GitHub API client using
   [google/go-github](https://github.com/google/go-github)
 
+## Configuring
+
+The wharf-provider-github program can be configured via environment variables
+and through optional config files. See the docs on the `Config` type over at:
+<https://pkg.go.dev/github.com/iver-wharf/wharf-provider-github#Config>
+
 ## Development
 
 1. Install Go 1.16 or later: <https://golang.org/>
