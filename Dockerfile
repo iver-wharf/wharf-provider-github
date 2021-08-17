@@ -24,6 +24,7 @@ ARG BUILD_VERSION
 ARG BUILD_GIT_COMMIT
 ARG BUILD_REF
 ARG BUILD_DATE
+# The added labels are based on this: https://github.com/projectatomic/ContainerApplicationGenericLabels
 LABEL name="iver-wharf/wharf-provider-github" \
     url="https://github.com/iver-wharf/wharf-provider-github" \
     release=${BUILD_REF} \
