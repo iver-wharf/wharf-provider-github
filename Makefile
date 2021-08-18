@@ -20,7 +20,7 @@ ifneq "$(version)" "latest"
 endif
 
 docker-run:
-	docker run --rm -it harbor.dgc.local/tools/webhook-relay
+	docker run --rm -it quay.io/iver-wharf/wharf-provider-github:$(version)
 
 serve: swag
 	go run .
