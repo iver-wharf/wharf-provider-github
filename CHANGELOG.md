@@ -42,7 +42,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   instead of solely JSON-formatted strings. (#16)
 
 - Added Makefile to simplify building and developing the project locally.
-  (#24, #26)
+  (#24, #26, #27)
 
 ## v2.0.0 (2021-07-12)
 
