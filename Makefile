@@ -6,7 +6,7 @@ build: swag
 	@echo "Built binary found at ./wharf-provider-github or ./wharf-provider-github.exe"
 
 docker:
-	@echo docker build . \
+	docker build . \
 		-t "quay.io/iver-wharf/wharf-provider-github:latest" \
 		-t "quay.io/iver-wharf/wharf-provider-github:$(version)" \
 		--build-arg BUILD_VERSION="$(version)" \
