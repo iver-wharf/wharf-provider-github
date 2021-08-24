@@ -39,13 +39,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   from `github.com/iver-wharf/wharf-core/pkg/ginutil`. (#20)
 
 - Changed version of `github.com/iver-wharf/wharf-core` from pre release to
-  v1.0.0 (#19)
+  v1.1.0 (#19, #28)
 
 - Changed to return IETF RFC-7807 compatible problem responses on failures
   instead of solely JSON-formatted strings. (#16)
 
 - Added Makefile to simplify building and developing the project locally.
-  (#24, #26, #27)
+  (#24, #26, #27, #28)
+
+- Added logging and custom exit code when app fails to bind the IP address and
+  port. (#28)
 
 ## v2.0.0 (2021-07-12)
 
