@@ -65,7 +65,6 @@ func main() {
 	if config.CA.CertsFile != "" {
 		client, err := httputils.NewClientWithCerts(config.CA.CertsFile)
 		if err != nil {
-			fmt.Println("Failed to get net/http.Client with certs:", err)
 			log.Error().WithError(err).Message("Failed to get net/http.Client with certs.")
 			os.Exit(1)
 		}
