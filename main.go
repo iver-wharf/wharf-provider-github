@@ -92,7 +92,13 @@ func main() {
 	r.GET("/import/github/version", getVersionHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	_ = r.Run(config.HTTP.BindAddress)
+	if err := r.Run(config.HTTP.BindAddress); err != nil {
+		log.Error().
+			WithError(err).
+			WithString("address", config.HTTP.BindAddress).
+			Message("Failed to start web server.")
+		os.Exit(2)
+	}
 }
 
 func runPingHandler(c *gin.Context) {
