@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
 	"github.com/iver-wharf/wharf-provider-github/docs"
 	"github.com/iver-wharf/wharf-provider-github/internal/httputils"
 
@@ -47,6 +47,8 @@ var log = logger.NewScoped("WHARF-PROVIDER-GITHUB")
 // @contact.email wharf@iver.se
 // @basePath /import
 func main() {
+	logger.AddOutput(logger.LevelDebug, consolepretty.Default)
+
 	var (
 		config Config
 		err    error
@@ -56,7 +58,7 @@ func main() {
 		os.Exit(1)
 	}
 	if config, err = loadConfig(); err != nil {
-		fmt.Println("Failed to read config:", err)
+		log.Error().WithError(err).Message("Failed to read config.")
 		os.Exit(1)
 	}
 
@@ -65,7 +67,6 @@ func main() {
 	if config.CA.CertsFile != "" {
 		client, err := httputils.NewClientWithCerts(config.CA.CertsFile)
 		if err != nil {
-			fmt.Println("Failed to get net/http.Client with certs:", err)
 			log.Error().WithError(err).Message("Failed to get net/http.Client with certs.")
 			os.Exit(1)
 		}
@@ -92,7 +93,13 @@ func main() {
 	r.GET("/import/github/version", getVersionHandler)
 	r.GET("/import/github/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	_ = r.Run(config.HTTP.BindAddress)
+	if err := r.Run(config.HTTP.BindAddress); err != nil {
+		log.Error().
+			WithError(err).
+			WithString("address", config.HTTP.BindAddress).
+			Message("Failed to start web server.")
+		os.Exit(2)
+	}
 }
 
 func runPingHandler(c *gin.Context) {
