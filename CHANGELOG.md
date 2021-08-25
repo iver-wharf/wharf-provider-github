@@ -21,7 +21,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   `github.com/iver-wharf/wharf-core/pkg/config` together with new config models
   for configuring wharf-provider-github. See `config.go` or the reference
   documentation on the `Config` type for information on how to configure
-  wharf-provider-github. (#19)
+  wharf-provider-github. (#19, #29)
 
 - Added config for setting bind address and port. (#14, #19)
 
