@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iver-wharf/wharf-core/pkg/cacertutil"
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	"github.com/iver-wharf/wharf-core/pkg/logger"
 	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
