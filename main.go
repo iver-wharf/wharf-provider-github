@@ -9,7 +9,6 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/logger"
 	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
 	"github.com/iver-wharf/wharf-provider-github/docs"
-	"github.com/iver-wharf/wharf-provider-github/internal/httputils"
 
 	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
@@ -65,7 +64,7 @@ func main() {
 	docs.SwaggerInfo.Version = AppVersion.Version
 
 	if config.CA.CertsFile != "" {
-		client, err := httputils.NewClientWithCerts(config.CA.CertsFile)
+		client, err := cacertutil.NewHttpClientWithCerts(config.CA.CertsFile)
 		if err != nil {
 			log.Error().WithError(err).Message("Failed to get net/http.Client with certs.")
 			os.Exit(1)
