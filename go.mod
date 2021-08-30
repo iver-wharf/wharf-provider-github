@@ -12,13 +12,12 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/iver-wharf/wharf-api-client-go v1.3.0
+	github.com/iver-wharf/wharf-api-client-go v1.3.1
 	github.com/iver-wharf/wharf-core v1.1.0
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
