@@ -41,6 +41,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed version of `github.com/iver-wharf/wharf-core` from pre release to
   v1.1.0 (#19, #28)
 
+- Changed version of `github.com/iver-wharf/wharf-api-client-go`
+  from v1.3.0 -> v1.3.1. (#31)
+
 - Changed to return IETF RFC-7807 compatible problem responses on failures
   instead of solely JSON-formatted strings. (#16)
 
