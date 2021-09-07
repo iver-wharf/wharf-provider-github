@@ -50,6 +50,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added logging and custom exit code when app fails to bind the IP address and
   port. (#28)
 
+- Changed version of `github.com/iver-wharf/wharf-core`
+  from v1.1.0 -> v1.2.0. (#30)
+
 - Removed `internal/httputils`, which was moved to `wharf-core/pkg/cacertutil`.
   (#30)
 
