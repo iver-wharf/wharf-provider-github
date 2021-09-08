@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	b64 "encoding/base64"
 	"net/http"
@@ -80,8 +81,15 @@ func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 		return
 	}
 
-	if i.ProjectID != 0 || i.Project != "" {
-		err = importer.importProject(i)
+	if i.ProjectID != 0 {
+		err = importer.refreshProject(i.ProjectID)
+		if err != nil {
+			ginutil.WriteAPIClientWriteError(c, err,
+				fmt.Sprintf("Unable to refresh project %q with ID %d from GitHub.", i.Project, i.ProjectID))
+			return
+		}
+	} else if i.Project != "" {
+		err = importer.importProject(i.Group, i.Project)
 		if err != nil {
 			ginutil.WriteAPIClientWriteError(c, err,
 				fmt.Sprintf("Unable to import project %q with ID %d from GitHub.", i.Project, i.ProjectID))
@@ -177,28 +185,41 @@ func (importer githubImporter) getBuildDefinition(owner string, projectName stri
 	return string(bodyString)
 }
 
-func (importer githubImporter) importProject(i importBody) error {
-	if i.ProjectID != 0 {
-		project, err := importer.WharfClient.GetProjectByID(i.ProjectID)
-		if err != nil {
-			return err
-		} else if project.ProjectID == 0 {
-			return fmt.Errorf(fmt.Sprintf("Project with id %v not found.", i.ProjectID))
-		}
-		i.Project = project.Name
+func (importer githubImporter) refreshProject(projectID uint) error {
+	project, err := importer.WharfClient.GetProjectByID(projectID)
+	if err != nil {
+		return err
+	} else if project.ProjectID == 0 {
+		return fmt.Errorf("project with id %v not found", projectID)
+	}
+	remoteProjectID, err := strconv.ParseInt(project.RemoteProjectID, 0, strconv.IntSize)
+	if err != nil {
+		return err
+	}
+	return importer.importProjectByRemoteProjectID(project.ProjectID, remoteProjectID)
+}
+
+func (importer githubImporter) importProjectByRemoteProjectID(projectID uint, remoteProjectID int64) error {
+	repo, _, err := importer.GithubClient.Repositories.GetByID(importer.Context, remoteProjectID)
+	if err != nil {
+		return err
 	}
 
+	return importer.putProject(projectID, repo)
+}
+
+func (importer githubImporter) importProject(groupName, projectName string) error {
 	var repo *github.Repository
 	var err error
-	if i.Group != "" {
-		repo, _, err = importer.GithubClient.Repositories.Get(importer.Context, i.Group, i.Project)
+	if groupName != "" {
+		repo, _, err = importer.GithubClient.Repositories.Get(importer.Context, groupName, projectName)
 		if err != nil {
 			return err
-		} else if repo.GetName() != i.Project {
-			return fmt.Errorf(fmt.Sprintf("Project with name %v not found.", i.Project))
-		} else if repo.GetOwner().GetLogin() != i.Group {
-			return fmt.Errorf(fmt.Sprintf("Unable to find project with name %v in organization or associeted with user %v.",
-				i.Project, repo.GetOwner().GetLogin()))
+		} else if repo.GetName() != projectName {
+			return fmt.Errorf("project with name %q not found", projectName)
+		} else if repo.GetOwner().GetLogin() != groupName {
+			return fmt.Errorf("unable to find project with name %q in organization or associated with user %q",
+				projectName, repo.GetOwner().GetLogin())
 		}
 	} else {
 		repos, _, err := importer.GithubClient.Repositories.List(importer.Context, "", nil)
@@ -207,16 +228,23 @@ func (importer githubImporter) importProject(i importBody) error {
 		}
 
 		for _, repository := range repos {
-			if repository.GetName() == i.Project {
+			if repository.GetName() == projectName {
 				repo = repository
+				break
 			}
 		}
 	}
 
-	return importer.putProject(repo)
+	return importer.putProject(0, repo)
 }
 
-func (importer githubImporter) putProject(repo *github.Repository) error {
+func (importer githubImporter) putProject(projectID uint, repo *github.Repository) error {
+	log.Debug().
+		WithString("repoName", repo.GetName()).
+		WithString("groupName", repo.GetOrganization().GetName()).
+		WithInt64("remoteProjectID", repo.GetID()).
+		WithUint("projectID", projectID).
+		Message("Called putProject")
 	buildDefinitionStr := importer.getBuildDefinition(repo.GetOwner().GetLogin(), repo.GetName())
 	project, err := importer.WharfClient.PutProject(
 		wharfapi.Project{
@@ -227,7 +255,10 @@ func (importer githubImporter) putProject(repo *github.Repository) error {
 			Description:     repo.GetDescription(),
 			AvatarURL:       *repo.GetOwner().AvatarURL,
 			ProviderID:      importer.Provider.ProviderID,
-			GitURL:          *repo.GitURL})
+			GitURL:          *repo.GitURL,
+			ProjectID:       projectID,
+			RemoteProjectID: fmt.Sprintf("%d", repo.GetID()),
+		})
 	if err != nil {
 		return err
 	} else if project.ProjectID == 0 {
@@ -261,7 +292,7 @@ func (importer githubImporter) importGroup(groupName string) error {
 
 	for _, repo := range repos {
 		if groupName == "" || repo.GetOwner().GetLogin() == groupName {
-			err = importer.putProject(repo)
+			err = importer.putProject(0, repo)
 			if err != nil {
 				return err
 			}
