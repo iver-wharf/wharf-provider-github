@@ -7,6 +7,7 @@ build: swag
 
 docker:
 	docker build . \
+		--pull \
 		-t "quay.io/iver-wharf/wharf-provider-github:latest" \
 		-t "quay.io/iver-wharf/wharf-provider-github:$(version)" \
 		--build-arg BUILD_VERSION="$(version)" \
