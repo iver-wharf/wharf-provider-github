@@ -39,7 +39,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   from `github.com/iver-wharf/wharf-core/pkg/ginutil`. (#20)
 
 - Changed version of `github.com/iver-wharf/wharf-core` from pre release to
-  v1.1.0 (#19, #28)
+  v1.2.0. (#19, #28, #30)
 
 - Changed version of `github.com/iver-wharf/wharf-api-client-go`
   from v1.3.0 -> v1.3.1. (#31)
@@ -52,6 +52,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added logging and custom exit code when app fails to bind the IP address and
   port. (#28)
+
+- Removed `internal/httputils`, which was moved to
+  `github.com/iver-wharf/wharf-core/pkg/cacertutil`. (#30)
 
 ## v2.0.0 (2021-07-12)
 
