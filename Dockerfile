@@ -1,4 +1,4 @@
-FROM golang:1.16.5 AS build
+FROM golang:1.16 AS build
 WORKDIR /src
 ENV GO111MODULE=on
 
@@ -15,7 +15,7 @@ RUN deploy/update-version.sh version.yaml \
     && make swag \
     && CGO_ENABLED=0 go build -o main
 
-FROM alpine:3.14.0 AS final
+FROM alpine:3.14 AS final
 RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 COPY --from=build /src/main ./
