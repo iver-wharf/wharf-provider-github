@@ -18,11 +18,10 @@ import (
 
 type importBody struct {
 	// used in refresh only
-	TokenID   uint   `json:"tokenId" example:"0"`
-	Token     string `json:"token" example:"sample token"`
-	User      string `json:"user" example:"sample user name"`
-	URL       string `json:"url" example:"https://api.github.com/"`
-	UploadURL string `json:"uploadUrl" example:""`
+	TokenID uint   `json:"tokenId" example:"0"`
+	Token   string `json:"token" example:"sample token"`
+	User    string `json:"user" example:"sample user name"`
+	URL     string `json:"url" example:"https://api.github.com/"`
 	// used in refresh only
 	ProviderID uint `json:"providerId" example:"0"`
 	// azuredevops, gitlab or github

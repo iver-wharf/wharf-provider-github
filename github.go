@@ -75,8 +75,8 @@ func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 	importer.GithubClient, err = importer.initGithubConnection()
 	if err != nil {
 		ginutil.WriteAPIClientReadError(c, err,
-			fmt.Sprintf("Unable to parse provider url %q or upload url %q",
-				importer.Provider.URL, importer.Provider.UploadURL))
+			fmt.Sprintf("Unable to parse provider url %q",
+				importer.Provider.URL))
 		return
 	}
 
@@ -143,11 +143,9 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 			err = fmt.Errorf("provider with id %v not found", i.ProviderID)
 		} else if provider.URL != i.URL {
 			err = fmt.Errorf("invalid url in provider %q", provider.URL)
-		} else if provider.UploadURL != i.UploadURL {
-			err = fmt.Errorf("invalid upload url in provider %q", provider.UploadURL)
 		}
 	} else {
-		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, UploadURL: i.UploadURL, TokenID: token.TokenID})
+		provider, err = importer.WharfClient.PutProvider(wharfapi.Provider{Name: "github", URL: i.URL, TokenID: token.TokenID})
 	}
 	log.Debug().
 		WithUint("providerId", provider.ProviderID).
@@ -159,7 +157,7 @@ func (importer githubImporter) getProvider(i importBody, token wharfapi.Token) (
 func (importer githubImporter) initGithubConnection() (*github.Client, error) {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: importer.Token.Token})
 	tc := oauth2.NewClient(importer.Context, ts)
-	client, err := github.NewEnterpriseClient(importer.Provider.URL, importer.Provider.UploadURL, tc)
+	client, err := github.NewEnterpriseClient(importer.Provider.URL, "", tc)
 	return client, err
 }
 
