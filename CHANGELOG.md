@@ -61,6 +61,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   - Alpine: 3.14.0 -> 3.14 (#33)
   - Golang: 1.16.5 -> 1.16 (#33)
 
+- Removed `UploadURL` field from the `importBody` struct, and all references to
+  `wharfapi.Provider.UploadURL`, which will be removed in wharf-api v5.0.0 as it
+  did not provide any functionality. (#35)
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
