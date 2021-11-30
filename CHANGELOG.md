@@ -39,7 +39,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   from `github.com/iver-wharf/wharf-core/pkg/ginutil`. (#20)
 
 - Changed version of `github.com/iver-wharf/wharf-core` from pre release to
-  v1.2.0. (#19, #28, #30)
+  v1.3.0. (#19, #28, #30, #43)
 
 - Changed version of `github.com/iver-wharf/wharf-api-client-go`
   from v1.3.0 -> v1.3.1. (#31)
