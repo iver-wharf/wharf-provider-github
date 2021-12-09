@@ -65,7 +65,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   `wharfapi.Provider.UploadURL`, which will be removed in wharf-api v5.0.0 as it
   did not provide any functionality. (#35)
 
-- Changed docker-build scripts for easier windows building. (#44)
+- Changed Dockerfile for easier windows building. (#44)
 
 ## v2.0.0 (2021-07-12)
 
