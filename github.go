@@ -196,7 +196,7 @@ func (importer githubImporter) refreshProject(i importBody) error {
 	if err != nil {
 		return err
 	} else if project.ProjectID == 0 {
-		return fmt.Errorf(fmt.Sprintf("Project with id %v not found.", i.ProjectID))
+		return fmt.Errorf("project with id %d not found", i.ProjectID)
 	}
 	i.Project = project.Name
 
@@ -205,9 +205,9 @@ func (importer githubImporter) refreshProject(i importBody) error {
 	if err != nil {
 		return err
 	} else if repo.GetName() != i.Project {
-		return fmt.Errorf("project with name %v not found", i.Project)
+		return fmt.Errorf("project with name %q not found", i.Project)
 	} else if repo.GetOwner().GetLogin() != i.Group {
-		return fmt.Errorf("unable to find project with name %v in organization or associated with user %v",
+		return fmt.Errorf("unable to find project with name %q in organization or associated with user %q",
 			i.Project, repo.GetOwner().GetLogin())
 	}
 
