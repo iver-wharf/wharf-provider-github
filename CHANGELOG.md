@@ -22,6 +22,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed version of `github.com/iver-wharf/wharf-api-client-go`
   from v1.3.0 -> v?.?.?. (#31, #45)
 
+- Added GitHub's internal project ID when adding project to database. (#45)
+
 - Added support for the TZ environment variable (setting timezones ex.
   `"Europe/Stockholm"`) through the tzdata package. (#25)
 
