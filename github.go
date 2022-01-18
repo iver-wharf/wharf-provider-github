@@ -10,9 +10,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/github"
-	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi"
-	"github.com/iver-wharf/wharf-api/pkg/model/request"
-	"github.com/iver-wharf/wharf-api/pkg/model/response"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/wharfapi"
+
 	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	_ "github.com/iver-wharf/wharf-provider-github/docs"
 	"golang.org/x/net/context"
