@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	b64 "encoding/base64"
 	"net/http"
@@ -269,7 +270,9 @@ func (importer githubImporter) createProject(repo *github.Repository) error {
 		Description:     repo.GetDescription(),
 		AvatarURL:       *repo.GetOwner().AvatarURL,
 		ProviderID:      importer.Provider.ProviderID,
-		GitURL:          *repo.GitURL}
+		GitURL:          *repo.GitURL,
+		RemoteProjectID: strconv.FormatInt(repo.GetID(), 10),
+	}
 
 	newProject, err := importer.WharfClient.CreateProject(project)
 	if err != nil {
