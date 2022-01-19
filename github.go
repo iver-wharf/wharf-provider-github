@@ -202,15 +202,9 @@ func (importer githubImporter) refreshProject(i importBody) error {
 	}
 	i.Project = project.Name
 
-	var repo *github.Repository
-	repo, _, err = importer.GithubClient.Repositories.Get(importer.Context, i.Group, i.Project)
+	repo, err := importer.getRepo(i.Group, i.Project)
 	if err != nil {
 		return err
-	} else if repo.GetName() != i.Project {
-		return fmt.Errorf("project with name %q not found", i.Project)
-	} else if repo.GetOwner().GetLogin() != i.Group {
-		return fmt.Errorf("unable to find project with name %q in organization or associated with user %q",
-			i.Project, repo.GetOwner().GetLogin())
 	}
 
 	buildDefinitionStr := importer.getBuildDefinition(repo.GetOwner().GetLogin(), repo.GetName())
@@ -235,14 +229,9 @@ func (importer githubImporter) importProject(i importBody) error {
 	var repo *github.Repository
 	var err error
 	if i.Group != "" {
-		repo, _, err = importer.GithubClient.Repositories.Get(importer.Context, i.Group, i.Project)
+		repo, err = importer.getRepo(i.Group, i.Project)
 		if err != nil {
 			return err
-		} else if repo.GetName() != i.Project {
-			return fmt.Errorf("project with name %v not found", i.Project)
-		} else if repo.GetOwner().GetLogin() != i.Group {
-			return fmt.Errorf("unable to find project with name %v in organization or associated with user %v",
-				i.Project, repo.GetOwner().GetLogin())
 		}
 	} else {
 		repos, _, err := importer.GithubClient.Repositories.List(importer.Context, "", nil)
@@ -259,6 +248,19 @@ func (importer githubImporter) importProject(i importBody) error {
 	}
 
 	return importer.createProject(repo)
+}
+
+func (importer githubImporter) getRepo(group, project string) (*github.Repository, error) {
+	repo, _, err := importer.GithubClient.Repositories.Get(importer.Context, group, project)
+	if err != nil {
+		return nil, err
+	} else if repo.GetName() != project {
+		return nil, fmt.Errorf("project with name %q not found", project)
+	} else if repo.GetOwner().GetLogin() != group {
+		return nil, fmt.Errorf("unable to find project with name %q in organization or associated with user %q",
+			project, repo.GetOwner().GetLogin())
+	}
+	return repo, nil
 }
 
 func (importer githubImporter) createProject(repo *github.Repository) error {
