@@ -10,7 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/iver-wharf/wharf-api-client-go/v2 v2.0.0-20220118154557-eb30c38ff2aa
+	github.com/iver-wharf/wharf-api-client-go/v2 v2.0.0
 	github.com/iver-wharf/wharf-core v1.3.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
