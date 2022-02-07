@@ -7,13 +7,13 @@ commit = $(shell git rev-parse HEAD)
 version = latest
 
 ifeq ($(OS),Windows_NT)
-wharf-provider-azuredevops.exe: swag
+wharf-provider-github.exe: swag
 	go build .
-	@echo "Built binary found at ./wharf-provider-azuredevops.exe"
+	@echo "Built binary found at ./wharf-provider-github.exe"
 else
-wharf-provider-azuredevops: swag
+wharf-provider-github: swag
 	go build .
-	@echo "Built binary found at ./wharf-provider-azuredevops"
+	@echo "Built binary found at ./wharf-provider-github"
 endif
 
 install:
@@ -35,20 +35,20 @@ deps:
 docker:
 	docker build . \
 		--pull \
-		-t "quay.io/iver-wharf/wharf-provider-azuredevops:latest" \
-		-t "quay.io/iver-wharf/wharf-provider-azuredevops:$(version)" \
+		-t "quay.io/iver-wharf/wharf-provider-github:latest" \
+		-t "quay.io/iver-wharf/wharf-provider-github:$(version)" \
 		--build-arg BUILD_VERSION="$(version)" \
 		--build-arg BUILD_GIT_COMMIT="$(commit)" \
 		--build-arg BUILD_DATE="$(shell date --iso-8601=seconds)"
 	@echo ""
 	@echo "Push the image by running:"
-	@echo "docker push quay.io/iver-wharf/wharf-provider-azuredevops:latest"
+	@echo "docker push quay.io/iver-wharf/wharf-provider-github:latest"
 ifneq "$(version)" "latest"
-	@echo "docker push quay.io/iver-wharf/wharf-provider-azuredevops:$(version)"
+	@echo "docker push quay.io/iver-wharf/wharf-provider-github:$(version)"
 endif
 
 docker-run:
-	docker run --rm -it quay.io/iver-wharf/wharf-provider-azuredevops:$(version)
+	docker run --rm -it quay.io/iver-wharf/wharf-provider-github:$(version)
 
 serve: swag
 	go run .
