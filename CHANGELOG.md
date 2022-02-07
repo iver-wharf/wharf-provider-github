@@ -12,7 +12,17 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.1.0 (WIP)
+## v3.0.0 (WIP)
+
+- BREAKING: Removed support for `github.com/iver-wharf/wharf-api` v4.
+  Now requires a minimum of wharf-api v5.0.0. (#45)
+
+- Added support for `github.com/iver-wharf/wharf-api` v5.0.0. (#45)
+
+- Changed version of `github.com/iver-wharf/wharf-api-client-go`
+  from v1.3.0 -> v2.0.0. (#31, #45)
+
+- Added GitHub's internal project ID when adding project to database. (#45)
 
 - Added support for the TZ environment variable (setting timezones ex.
   `"Europe/Stockholm"`) through the tzdata package. (#25)
@@ -40,9 +50,6 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed version of `github.com/iver-wharf/wharf-core` from pre release to
   v1.3.0. (#19, #28, #30, #43)
-
-- Changed version of `github.com/iver-wharf/wharf-api-client-go`
-  from v1.3.0 -> v1.3.1. (#31)
 
 - Changed to return IETF RFC-7807 compatible problem responses on failures
   instead of solely JSON-formatted strings. (#16)
