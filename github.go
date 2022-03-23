@@ -216,7 +216,7 @@ func (importer githubImporter) refreshProject(i importBody) error {
 		Description:     repo.GetDescription(),
 		AvatarURL:       *repo.GetOwner().AvatarURL,
 		ProviderID:      importer.Provider.ProviderID,
-		GitURL:          *repo.GitURL}
+		GitURL:          *repo.SSHURL}
 	_, err = importer.WharfClient.UpdateProject(i.ProjectID, projectUpdate)
 	return err
 }
@@ -273,7 +273,7 @@ func (importer githubImporter) createProject(repo *github.Repository) error {
 		Description:     repo.GetDescription(),
 		AvatarURL:       *repo.GetOwner().AvatarURL,
 		ProviderID:      importer.Provider.ProviderID,
-		GitURL:          *repo.GitURL,
+		GitURL:          *repo.SSHURL,
 		RemoteProjectID: strconv.FormatInt(repo.GetID(), 10),
 	}
 

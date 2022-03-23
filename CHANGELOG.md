@@ -74,6 +74,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed Dockerfile for easier windows building. (#44)
 
+- Fixed usage of `git://` URLs when importing and refreshing projects. Since 
+  January 11, 2022, GitHub disabled `git://` URLs in favor of only `https://`
+  and `ssh://` URLs. (#48)
+
+  Read more here: <https://github.blog/2021-09-01-improving-git-protocol-security-github/>
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
