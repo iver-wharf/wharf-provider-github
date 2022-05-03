@@ -19,8 +19,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added support for `github.com/iver-wharf/wharf-api` v5.0.0. (#45)
 
-- Changed version of `github.com/iver-wharf/wharf-api-client-go`
-  from v1.3.0 -> v2.0.0. (#31, #45)
+- Changed version of dependencies:
+
+  - `github.com/gin-gonic/gin` from v1.7.4 to v1.7.7 (#50)
+  - `github.com/iver-wharf/wharf-api-client-go` from v1.3.0 to v2.0.0 (#31, #45)
+  - `github.com/swaggo/gin-swagger` from v1.3.1 to v1.4.3 (#50)
+  - `github.com/swaggo/swag` from v1.7.1 to v1.8.1 (#50)
 
 - Added GitHub's internal project ID when adding project to database. (#45)
 
@@ -63,10 +67,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Removed `internal/httputils`, which was moved to
   `github.com/iver-wharf/wharf-core/pkg/cacertutil`. (#30)
 
+- Changed Go runtime from v1.16 to v1.18. (#50)
+
 - Changed version of Docker base images, relying on "latest" patch version:
 
-  - Alpine: 3.14.0 -> 3.14 (#33)
-  - Golang: 1.16.5 -> 1.16 (#33)
+  - Alpine: 3.14.0 -> 3.15 (#33, #50)
+  - Golang: 1.16.5 -> 1.18 (#33, #50)
 
 - Removed `UploadURL` field from the `importBody` struct, and all references to
   `wharfapi.Provider.UploadURL`, which will be removed in wharf-api v5.0.0 as it
@@ -79,13 +85,6 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   and `ssh://` URLs. (#48)
 
   Read more here: <https://github.blog/2021-09-01-improving-git-protocol-security-github/>
-
-- Changed Go runtime from v1.16 to v1.18. (#50)
-
-- Changed version of Docker base images:
-
-  - Alpine: 3.14 -> 3.15 (#50)
-  - Golang: 1.16 -> 1.18 (#50)
 
 ## v2.0.0 (2021-07-12)
 
