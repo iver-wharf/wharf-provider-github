@@ -80,6 +80,13 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
   Read more here: <https://github.blog/2021-09-01-improving-git-protocol-security-github/>
 
+- Changed Go runtime from v1.16 to v1.18. (#50)
+
+- Changed version of Docker base images:
+
+  - Alpine: 3.14 -> 3.15 (#50)
+  - Golang: 1.16 -> 1.18 (#50)
+
 ## v2.0.0 (2021-07-12)
 
 - BREAKING: Changed Wharf API dependency to v4.1.0. This provider now uses call
