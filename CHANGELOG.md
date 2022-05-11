@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v3.0.1 (WIP)
+
+- Fixed an issue where clicking refresh on a project would incorrectly raise
+  an error. (#51)
+
 ## v3.0.0 (2022-03-23)
 
 - BREAKING: Removed support for `github.com/iver-wharf/wharf-api` v4.
