@@ -15,7 +15,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 ## v3.0.1 (WIP)
 
 - Fixed an issue where clicking refresh on a project would incorrectly raise
-  an error. (#51)
+  an error. (#52)
 
 ## v3.0.0 (2022-03-23)
 
