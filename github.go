@@ -92,6 +92,9 @@ func (m githubImporterModule) runGitHubHandler(c *gin.Context) {
 				fmt.Sprintf("Unable to refresh project %q with ID %d from GitHub.", i.Project, i.ProjectID))
 			return
 		}
+		// If a refresh is possible the project already exists. Don't create a new project from group/name.
+		c.Status(http.StatusOK)
+		return
 	}
 
 	if i.Project != "" {
