@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v3.0.1 (WIP)
+## v3.0.1 (2022-05-12)
 
 - Fixed an issue where clicking refresh on a project would incorrectly raise
   an error. (#52)
